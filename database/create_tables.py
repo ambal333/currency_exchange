@@ -1,16 +1,4 @@
-
 from database.db_connection import get_db_connection, get_cursor
-# with sqlite3.connect('currencies.db') as connection:
-#     cursor = connection.cursor()
-#     cursor.execute('''
-#         CREATE TABLE IF NOT EXISTS Currencies(
-#         id INTEGER PRIMARY KEY,
-#         code VARCHAR UNIQUE NOT NULL,
-#         fullname VARCHAR NOT NULL,
-#         sign VARCHAR NOT NULL
-#         )
-#     ''')
-
 def init_database():
     with get_db_connection() as conn:
         with get_cursor(conn) as cur:
@@ -30,4 +18,3 @@ def init_database():
                 ''')
             conn.commit()
     print('database is create')
-
