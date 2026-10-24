@@ -5,6 +5,4 @@ def get_unique_curren(code):
         with get_cursor(conn) as cur:
             cur.execute("SELECT * FROM Currencies WHERE code = ?", (code,))
             data = cur.fetchone()
-    if not data:
-        return f'валюты {code} нет'
     return data
