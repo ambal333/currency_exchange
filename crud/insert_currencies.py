@@ -8,9 +8,10 @@ def insert_currency(code, fullname, sign):
             cur.execute('SELECT fullname FROM Currencies WHERE code = ?', (code, ))
             get_currency = cur.fetchone()
             if get_currency:
-                print(f'валюта {code} уже существует')
-                return
+                return 409, {'error': f'валюта {code} уже существует'}
             else:
                 cur.execute(f"INSERT INTO Currencies(code, fullname, sign) VALUES (?,?,?)", (code, fullname, sign))
                 conn.commit()
-    return f'данные добавлены'
+            cur.execute('SELECT * FROM Currencies WHERE code = ?', (code, ))
+            created_currency = cur.fetchone()
+    return 201, created_currency

@@ -5,13 +5,14 @@ from crud.get_unique_currencies import get_unique_curren
 from http.server import HTTPServer
 from http_requests.request_handler import RequestHandler
 from controller.router import Router
-from controller.get_currencies import Controller
+from controller.controller import Controller
 if __name__ == '__main__':
     init_database()
     router = Router()
     controller = Controller()
     router.add_routes('GET', '/currencies', controller.do_get_all)
     router.add_routes('GET', '/currencies/{code}', controller.do_get_unique)
+    router.add_routes('POST', '/currencies', controller.do_post)
     # router.add_routes('GET', 'currencies', controller.do_get_unique)
     # insert_currency('AUD','Australian dollar','A$')
     insert_currency('USD', 'American dollar', '$')

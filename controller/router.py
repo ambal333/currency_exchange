@@ -7,36 +7,41 @@ class Router:
     def add_routes(self, method, url, handler):
         self.routes[(method.upper(), url)] = handler
 
-    def dispatch(self, method, path):
-        current_path, code = self.search_path(path)
+    def dispatch(self, method, path, data=None):
+        current_path, code = self.search_path(path, method)
         handler = self.routes.get((method.upper(), current_path))
         if handler is None:
             return 404, {'error': 'такого пути нет'}
-        if code:
+        if 'code' in code:
             if code.get('code') != '':
                 current_code = code.get('code')
                 return handler(current_code)
             elif code.get('code') == '':
                 return 400, {'error': 'Код валюты отсутствует в адресе'}
-            else:
-                return None
+        if code.get('method') == 'POST':
+            return handler(**data)
         else:
             return handler()
 
-    def search_path(self, path):
+    def search_path(self, path, method):
         find_path = path.split('/')[1::]
         for key, value in self.routes.items():
             flag = 0
             code = {}
             save_path = key[1].split('/')[1::]
+            current_method = key[0]
             if len(find_path) == len(save_path):
-                for index, i in enumerate(find_path):
-                    if save_path[index] == i:
-                        flag = 1
-                    if save_path[index].startswith('{') and save_path[index].endswith('}'):
-                        code[save_path[index][1:-1]] = i.upper()
-                if flag == 1:
-                    return key[1], code
+                if method == current_method:
+                    for index, i in enumerate(find_path):
+                        if save_path[index] == i:
+                            flag = 1
+                        if save_path[index].startswith('{') and save_path[index].endswith('}'):
+                            code[save_path[index][1:-1]] = i.upper()
+                        code['method'] = method.upper()
+                    if flag == 1:
+                        return key[1], code
+                else:
+                    continue
             else:
                 continue
         return 'нет подходящего пути'
@@ -46,8 +51,8 @@ class Router:
 # router = Router()
 # router.add_routes('GET', '/currencies', None)
 # router.add_routes('GET', '/currencies/{code}', None)
-# router.add_routes('POST', '/users/{id}', None)
-# print(router.search_path('/currencies/eur')) #('/currencies/{code}', {'code': 'EUR'})
-# print(router.search_path('/currencies')) #('/currencies', {})
-# print(router.search_path('/currencies/')) # ('/currencies/{code}', {'code': ''})
+# router.add_routes('POST', '/currencies', None)
+# print(router.search_path('/currencies/eur', 'GET')) #('/currencies/{code}', {'code': 'EUR'})
+# print(router.search_path('/currencies', 'GET')) #('/currencies', {})
+# print(router.search_path('/currencies', 'POST')) # ('/currencies/{code}', {'code': ''})
 
