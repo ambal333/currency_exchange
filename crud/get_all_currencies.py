@@ -5,6 +5,7 @@ def get_all_curren():
         with get_cursor(conn) as cur:
             cur.execute("SELECT * FROM Currencies")
             data = format_currency(cur.fetchall())
+            # data = cur.fetchall()
     if not data:
         return f'валюта не найдена'
     return data

@@ -1,7 +1,5 @@
-import sqlite3
-
 from database.db_connection import get_db_connection,get_cursor
-
+from crud.format_data import format_currency
 def insert_currency(code, fullname, sign):
     with get_db_connection() as conn:
         with get_cursor(conn) as cur:
@@ -13,5 +11,5 @@ def insert_currency(code, fullname, sign):
                 cur.execute(f"INSERT INTO Currencies(code, fullname, sign) VALUES (?,?,?)", (code, fullname, sign))
                 conn.commit()
             cur.execute('SELECT * FROM Currencies WHERE code = ?', (code, ))
-            created_currency = cur.fetchone()
+            created_currency = format_currency(cur.fetchall())
     return 201, created_currency

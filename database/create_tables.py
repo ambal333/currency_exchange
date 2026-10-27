@@ -12,8 +12,8 @@ def init_database():
             cur.execute('''
                     CREATE TABLE IF NOT EXISTS ExchangeRates(
                     id INTEGER PRIMARY KEY,
-                    basecurrencyid INTEGER REFERENCES Currencies(ID) UNIQUE,
-                    targetcurrencyid INTEGER REFERENCES Currencies(ID) UNIQUE,
+                    basecurrencyid INTEGER REFERENCES Currencies(ID),
+                    targetcurrencyid INTEGER REFERENCES Currencies(ID),
                     rate NUMERIC(4,6) NOT NULL);
                 ''')
             conn.commit()

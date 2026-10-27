@@ -18,17 +18,20 @@ class RequestHandler(BaseHTTPRequestHandler):
         print(data)
 
     def do_POST(self):
-        responce_body = {}
+        response_body = {}
         path = self.path
         content_length = int(self.headers['content-length'])
         data = self.rfile.read(content_length)
         body = parse_qs(data.decode('utf-8'))
-        responce_body['name'] = body['name'][0]
-        responce_body['code'] = body['code'][0]
-        responce_body['sign'] = body['sign'][0]
-        status_code, data_db = self.server.router.dispatch('POST', path, responce_body)
-        self.send_json(status_code, data_db)
-        print(body, path)
+        print(body)
+        if 'name' in body and 'code' in body and 'sign' in body:
+            response_body['name'] = body['name'][0]
+            response_body['code'] = body['code'][0]
+            response_body['sign'] = body['sign'][0]
+            status_code, data_db = self.server.router.dispatch('POST', path, response_body)
+            self.send_json(status_code, data_db)
+        else:
+            self.send_json(400,{'error': 'Отсутствует нужное поле формы'})
 
     def do_DELETE(self):
         pass

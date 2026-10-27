@@ -20,10 +20,12 @@ class Controller:
         except Exception:
             return 500, {'error': 'база данных недоступна'}
 
-    def do_post(self, name, code, sign):
+    def do_post_currency(self, name, code, sign):
         try:
             status_code, db_post = insert_currency(code, name, sign)
             return status_code, db_post
         except Exception:
             return 500, {'error': 'база данных недоступна'}
 
+    def do_get_exchange_rates(self):
+        pass
