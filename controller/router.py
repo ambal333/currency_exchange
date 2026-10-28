@@ -8,17 +8,22 @@ class Router:
         self.routes[(method.upper(), url)] = handler
 
     def dispatch(self, method, path, data=None):
-        current_path, code = self.search_path(path, method)
+        current_path, code= self.search_path(path, method)
+        # print(current_path)
         handler = self.routes.get((method.upper(), current_path))
         if handler is None:
             return 404, {'error': 'такого пути нет'}
         if 'code' in code:
-            if code.get('code') != '':
+            if code.get('code') != '' and code.get('method') != 'PATCH':
                 current_code = code.get('code')
                 return handler(current_code)
             elif code.get('code') == '':
                 return 400, {'error': 'Код валюты отсутствует в адресе'}
         if code.get('method') == 'POST':
+            return handler(**data)
+        if code.get('method') == 'PATCH':
+
+            data['code'] = code['code']
             return handler(**data)
         else:
             return handler()
@@ -52,7 +57,12 @@ class Router:
 # router.add_routes('GET', '/currencies', None)
 # router.add_routes('GET', '/currencies/{code}', None)
 # router.add_routes('POST', '/currencies', None)
+# router.add_routes('GET', '/exchangeRates', None)
+# router.add_routes('GET', '/exchangeRates/{code}', None)
+# router.add_routes('POST', '/exchangeRates', None)
+# router.add_routes('PATCH', '/exchangeRate/{code}', None)
 # print(router.search_path('/currencies/eur', 'GET')) #('/currencies/{code}', {'code': 'EUR'})
 # print(router.search_path('/currencies', 'GET')) #('/currencies', {})
-# print(router.search_path('/currencies', 'POST')) # ('/currencies/{code}', {'code': ''})
+# print(router.search_path('/exchangeRate/USDRv', 'PATCH')) # ('/currencies/{code}', {'code': ''})
+
 

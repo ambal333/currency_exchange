@@ -1,5 +1,5 @@
 from database.db_connection import get_db_connection, get_cursor
-
+from crud.format_data import format_exchange_rates
 def get_exchange_rates():
     with get_db_connection() as conn:
         with get_cursor(conn) as cur:
@@ -8,8 +8,9 @@ def get_exchange_rates():
                         'tc.code, tc.sign, er.rate FROM ExchangeRates as er '
                         'JOIN Currencies as bc ON er.basecurrencyid = bc.id '
                         'JOIN Currencies as tc ON er.targetcurrencyid = tc.id;')
-            data = cur.fetchall()
-            print(data)
+            # cur.execute('SELECT * FROM ExchangeRates')
+            data = format_exchange_rates(cur.fetchall())
+            return data
 
 
 # [
