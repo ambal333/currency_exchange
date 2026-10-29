@@ -15,7 +15,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         path = self.path
         status_code, data = self.server.router.dispatch('GET', path)
         self.send_json(status_code, data)
-        # print(data)
+
 
     def do_POST(self):
         response_body = {}
@@ -23,7 +23,6 @@ class RequestHandler(BaseHTTPRequestHandler):
         content_length = int(self.headers['content-length'])
         data = self.rfile.read(content_length)
         body = parse_qs(data.decode('utf-8'))
-        # print(body)
         if 'name' in body and 'code' in body and 'sign' in body:
             response_body['name'] = body['name'][0]
             response_body['code'] = body['code'][0]
@@ -33,6 +32,7 @@ class RequestHandler(BaseHTTPRequestHandler):
         if 'baseCurrencyCode' in body and 'targetCurrencyCode' in body and 'rate' in body:
             response_body['targetCurrencyCode'] = body['targetCurrencyCode'][0]
             response_body['baseCurrencyCode'] = body['baseCurrencyCode'][0]
+            print(body['targetCurrencyCode'][0],body['baseCurrencyCode'][0])
             response_body['rate'] = body['rate'][0]
             status_code, data_db = self.server.router.dispatch('POST', path, response_body)
             self.send_json(status_code, data_db)
@@ -45,7 +45,6 @@ class RequestHandler(BaseHTTPRequestHandler):
         content_length = int(self.headers['content-length'])
         data = self.rfile.read(content_length)
         body = parse_qs(data.decode('utf-8'))
-        # print(body)
         if 'rate' in body:
             new_rate['rate'] = body['rate'][0]
             status_code, update_rate = self.server.router.dispatch('PATCH', path, new_rate)

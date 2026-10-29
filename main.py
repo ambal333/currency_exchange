@@ -11,6 +11,7 @@ from crud.get_exchange_rates import get_exchange_rates
 from crud.get_unique_exchange_rates import get_unique_exchange_rates
 from crud.patch_exchange_rates import patch_exchange_rate
 
+
 if __name__ == '__main__':
     init_database()
     router = Router()
@@ -21,7 +22,8 @@ if __name__ == '__main__':
     router.add_routes('GET', '/exchangeRates', controller.do_get_exchange_rates)
     router.add_routes('GET', '/exchangeRates/{code}', controller.do_get_unique_exchange_rates)
     router.add_routes('POST', '/exchangeRates', controller.do_post_exchange_rates)
-    router.add_routes('PATCH', '/exchangeRate/{code}', controller.do_patch_exchange_currency)
+    router.add_routes('PATCH', '/exchangeRate/{code}', controller.do_patch_exchange_rate)
+    router.add_routes('GET', '/exchange?from={code_from}&to={code_to}&amount={amount}', controller.do_get_exchange_currency)
     # router.add_routes('GET', 'currencies', controller.do_get_unique)
 
     insert_currency('AUD','Australian dollar','A$')
@@ -31,6 +33,7 @@ if __name__ == '__main__':
     # print(get_unique_exchange_rates('AUD', 'USD'))
     # print(get_exchange_rates())
     # print(insert_exchange_rate('EUR', 'lir', 0.7))
+    # print(insert_exchange_rate('RUB', 'AUD', 1.5))
     host, port = 'localhost', 8000
     server = HTTPServer((host,port), RequestHandler)
     server.router = router

@@ -29,4 +29,16 @@ def format_exchange_rates(data):
                 "rate": i[9]
             }
         )
+    if len(result) == 1:
+        return result[0]
     return result
+
+def format_exchange_currency(base_currency, target_currency, rate, amount, converted_amount):
+    data = {
+                "baseCurrency": base_currency,
+                "targetCurrency": target_currency,
+                "rate": rate,
+                "amount": amount,
+                "convertedAmount": converted_amount
+            }
+    return data
