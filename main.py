@@ -4,7 +4,7 @@ from crud.get_all_currencies import get_all_curren
 from crud.get_unique_currencies import get_unique_curren
 from crud.insert_exchange_rates import insert_exchange_rate
 from http.server import HTTPServer
-from http_requests.request_handler import RequestHandler
+from http_requests.server import RequestHandler
 from controller.router import Router
 from controller.controller import Controller
 from crud.get_exchange_rates import get_exchange_rates
