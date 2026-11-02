@@ -7,10 +7,14 @@ class CurrenciesController(BaseController):
     def do_GET(self):
         try:
             currencies = self.currencies_dao.get_all_currencies()
+            print(currencies)
             self.send_json(200, currencies)
-        except:
-            pass
+        except Exception as e:
+            print({'error': e})
+            return {'error': e}
 
 
     def do_POST(self):
         pass
+
+

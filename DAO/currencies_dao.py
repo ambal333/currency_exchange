@@ -1,7 +1,7 @@
 import sqlite3
 
 from DAO.base_dao import BaseDao
-
+from database.create_tables import init_database
 class CurrenciesDao(BaseDao):
 
     def get_all_currencies(self):
@@ -9,6 +9,8 @@ class CurrenciesDao(BaseDao):
         try:
             cur.execute("SELECT * FROM Currencies")
             return cur.fetchall()
+        except Exception as e:
+            return {'error': e}
         finally:
             cur.close()
 
@@ -31,9 +33,14 @@ class CurrenciesDao(BaseDao):
             raise
         finally:
             cur.close()
-
-
-
+# init_database()
+# conn = sqlite3.connect('currencies.db')
+#
+# currencies = CurrenciesDao(conn)
+# currencies.insert_currency('EUR', 'Euro', '%')
+# print(currencies.get_all_currencies())
+#
+# conn.close
 
 
 

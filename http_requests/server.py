@@ -20,9 +20,9 @@ class RequestServer(BaseHTTPRequestHandler):
     def search_controller(self):
         try:
             controller = RouterPath.search_path(self.path)
-            return controller(self, self.server.database)
-        except Exception:
-            pass
+            return controller(self, self.server.database.connection)
+        except Exception as e:
+            return {'error': e}
 
     def do_DELETE(self):
         pass

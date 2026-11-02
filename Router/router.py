@@ -3,13 +3,13 @@ from urllib.parse import urlparse
 from controller.currencies_controller import CurrenciesController
 
 
-# routes = {
-#     'currencies': CurrenciesController,
-#     'currency': CurrencyController,
-#     'exchangeRates': ExchangeRates,
-#     'exchangeRate': ExchangeRate,
-#     'exchange': Exchange
-# }
+routes = {
+    'currencies': CurrenciesController,
+    # 'currency': CurrencyController,
+    # 'exchangeRates': ExchangeRates,
+    # 'exchangeRate': ExchangeRate,
+    # 'exchange': Exchange
+}
 
 class RouterPath:
 
@@ -22,4 +22,4 @@ class RouterPath:
             route = split_path[1]
         else:
             route = '/'
-        return route
+        return routes.get(route)
