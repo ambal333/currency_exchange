@@ -1,4 +1,5 @@
 import sqlite3
+from typing import Union
 
 from DAO.base_dao import BaseDao
 
@@ -29,7 +30,7 @@ class ExchangeRatesDao(BaseDao):
         finally:
             cur.close()
 
-    def insert_exchange_rates(self, code_1, code_2, rate):
+    def insert_exchange_rates(self, code_1: str, code_2: str, rate: Union[int, float]):
         cur = self.connection.cursor()
         try:
             id_1 = self.get_currency_id_by_code(code_1)
@@ -44,7 +45,7 @@ class ExchangeRatesDao(BaseDao):
         finally:
             cur.close()
 
-    def patch_exchange_rates(self, rate, code_1, code_2):
+    def patch_exchange_rates(self, code_1: str, code_2: str, rate: Union[int, float]):
         cur = self.connection.cursor()
         try:
             cur.execute('UPDATE ExchangeRates SET rate = ? WHERE '

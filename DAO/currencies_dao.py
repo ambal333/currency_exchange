@@ -9,8 +9,8 @@ class CurrenciesDao(BaseDao):
         try:
             cur.execute("SELECT * FROM Currencies")
             return cur.fetchall()
-        except Exception as e:
-            return {'error': e}
+        except sqlite3.Error:
+            raise
         finally:
             cur.close()
 
@@ -19,6 +19,8 @@ class CurrenciesDao(BaseDao):
         try:
             cur.execute("SELECT * FROM Currencies WHERE code = ?", (code,))
             return cur.fetchone()
+        except sqlite3.Error:
+            raise
         finally:
             cur.close()
 

@@ -22,7 +22,7 @@ class RequestServer(BaseHTTPRequestHandler):
             controller = RouterPath.search_path(self.path)
             return controller(self, self.server.database.connection)
         except Exception as e:
-            return {'error': e}
+            print({'error': e})
 
     def do_DELETE(self):
         pass

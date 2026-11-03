@@ -1,4 +1,3 @@
-from database.create_tables import init_database
 # from crud.insert_currencies import insert_currency
 # from crud.get_all_currencies import get_all_curren
 # from crud.get_unique_currencies import get_unique_curren
