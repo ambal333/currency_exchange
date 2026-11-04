@@ -36,8 +36,6 @@ class BaseDao:
                     "INSERT INTO Currencies(code, fullname, sign) VALUES (?,?,?)",
                     ('RUB', 'Russian rubles', '₽'))
                 self.connection.commit()
-        except sqlite3.Error:
-            raise
         finally:
             cur.close()
 
@@ -46,7 +44,5 @@ class BaseDao:
         try:
             cur.execute('SELECT id FROM Currencies WHERE code = ?', (code,))
             return cur.fetchone()
-        except sqlite3.Error:
-            raise
         finally:
             cur.close()

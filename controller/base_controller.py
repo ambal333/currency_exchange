@@ -1,12 +1,16 @@
 import json
 import sqlite3
 
+from Exception.integrity_exchange_error import IntegrityExchangeError
 from Exception.code_exception import CodeNotFoundError
 from Exception.currency_not_found import CurrencyNotFound
 from Exception.form_field_exception import FormFieldError
+from Exception.not_exist_exchange_rate import NotExistExchangeRate
+from Exception.not_exist_in_db import NotExistInDb
 from abc import ABC, abstractmethod
 from http.server import BaseHTTPRequestHandler
 from database.db_connection import DatabaseConnection
+
 class BaseController(ABC):
     def __init__(self, handler: BaseHTTPRequestHandler, connection: DatabaseConnection):
         self.handler = handler
@@ -38,7 +42,7 @@ class BaseController(ABC):
             if isinstance(error, sqlite3.IntegrityError):
                 message = 'Валюта с таким кодом уже существует'
                 self.send_json(409, message)
-            if isinstance(error, sqlite3.DatabaseError):
+            if isinstance(error, sqlite3.InternalError):
                 message = 'база данных недоступна'
                 self.send_json(500, message)
             if isinstance(error, CodeNotFoundError):
@@ -46,6 +50,15 @@ class BaseController(ABC):
                 self.send_json(400, message)
             if isinstance(error, CurrencyNotFound):
                 message = 'Валюта не найдена'
+                self.send_json(404, message)
+            if isinstance(error, NotExistInDb):
+                message = 'Одна (или обе) валюта из валютной пары не существует в БД'
+                self.send_json(404, message)
+            if isinstance(error, IntegrityExchangeError):
+                message = 'Валютная пара с таким кодом уже существует'
+                self.send_json(409, message)
+            if isinstance(error, NotExistExchangeRate):
+                message = 'Валютная пара отсутствует в базе данных'
                 self.send_json(404, message)
         except Exception as e:
             self.send_json(400, e)

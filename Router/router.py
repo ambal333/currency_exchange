@@ -2,17 +2,17 @@ from urllib.parse import urlparse
 
 from controller.currencies_controller import CurrenciesController
 from controller.currency_controller import CurrencyController
-
+from controller.exchangeRates_controller import ExchangeRatesController
+from controller.exchangeRate_controller import ExchangeRateController
 routes = {
     'currencies': CurrenciesController,
     'currency': CurrencyController,
-    # 'exchangeRates': ExchangeRates,
-    # 'exchangeRate': ExchangeRate,
+    'exchangeRates': ExchangeRatesController,
+    'exchangeRate': ExchangeRateController,
     # 'exchange': Exchange
 }
 
 class RouterPath:
-
     @staticmethod
     def search_path(request_path: str):
         path = urlparse(request_path).path

@@ -31,7 +31,7 @@ class CurrenciesController(BaseController):
                     code = data_decode.get('code')[0]
                     sign = data_decode.get('sign')[0]
                     added_currency = self.currencies_dao.insert_currency(
-                        fullname, code, sign)
+                        fullname, code.upper(), sign)
                     self.send_json(200, added_currency)
                 else:
                     raise FormFieldError('Отсутствует нужное поле формы')
