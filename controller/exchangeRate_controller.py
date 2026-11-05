@@ -1,5 +1,7 @@
 from urllib.parse import parse_qs
 
+from Exception.exchange_rate_not_found import ExchangeRateNotFound
+from Exception.exchange_rates_code_not_found import ExchangeRateCodeNotFound
 from Exception.form_field_exception import FormFieldError
 from controller.base_controller import BaseController
 from DAO.exchange_rates_dao import ExchangeRatesDao
@@ -11,7 +13,23 @@ class ExchangeRateController(BaseController):
         self.exchange_rate_dao = ExchangeRatesDao(connection)
 
     def do_GET(self):
-        pass
+        try:
+            path = self.handler.path.split('/')[1:]
+            if len(path) == 2 and path[1] != '':
+                current_path, code = path
+                code_1 = code[:3].upper()
+                code_2 = code[3:].upper()
+                unique_exchange_rate = (
+                    self.exchange_rate_dao.get_unique_exchange_rates(code_1,
+                                                                     code_2))
+                if unique_exchange_rate is None:
+                    raise ExchangeRateNotFound('Обменный курс для пары не найден')
+                return self.send_json(200, unique_exchange_rate)
+            else:
+                raise ExchangeRateCodeNotFound('Коды валют пары отсутствуют в адресе')
+        except Exception as e:
+            self.send_error(e)
+
 
     def do_POST(self):
         pass

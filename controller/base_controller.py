@@ -1,6 +1,8 @@
 import json
 import sqlite3
 
+from Exception.exchange_rate_not_found import ExchangeRateNotFound
+from Exception.exchange_rates_code_not_found import ExchangeRateCodeNotFound
 from Exception.integrity_exchange_error import IntegrityExchangeError
 from Exception.code_exception import CodeNotFoundError
 from Exception.currency_not_found import CurrencyNotFound
@@ -60,5 +62,11 @@ class BaseController(ABC):
             if isinstance(error, NotExistExchangeRate):
                 message = 'Валютная пара отсутствует в базе данных'
                 self.send_json(404, message)
+            if isinstance(error, ExchangeRateNotFound):
+                message = 'Обменный курс для пары не найден'
+                self.send_json(404, message)
+            if isinstance(error, ExchangeRateCodeNotFound):
+                message = 'Коды валют пары отсутствуют в адресе'
+                self.send_json(400, message)
         except Exception as e:
             self.send_json(400, e)
