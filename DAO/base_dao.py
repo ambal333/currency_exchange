@@ -1,5 +1,3 @@
-import sqlite3
-
 from database.db_connection import DatabaseConnection
 
 class BaseDao:
@@ -21,7 +19,7 @@ class BaseDao:
                                 id INTEGER PRIMARY KEY,
                                 basecurrencyid INTEGER REFERENCES Currencies(ID),
                                 targetcurrencyid INTEGER REFERENCES Currencies(ID),
-                                rate NUMERIC(4,6) NOT NULL);
+                                rate DECIMAL(6) NOT NULL);
                             ''')
             self.connection.commit()
             cur.execute('SELECT COUNT(id) FROM Currencies')

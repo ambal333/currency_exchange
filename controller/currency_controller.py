@@ -1,8 +1,9 @@
-
+from DTO.currencies_dto import CurrenciesDTO
 from Exception.code_exception import CodeNotFoundError
 from Exception.currency_not_found import CurrencyNotFound
 from controller.base_controller import BaseController
 from DAO.currencies_dao import CurrenciesDao
+
 
 class CurrencyController(BaseController):
     def __init__(self, handler, connection):
@@ -16,9 +17,12 @@ class CurrencyController(BaseController):
                 current_path, code = path
                 unique_currency = self.currency_dao.get_unique_currency(
                     code.upper())
+                print(unique_currency)
                 if unique_currency is None:
                     raise CurrencyNotFound('Валюта не найдена')
-                return self.send_json(200, unique_currency)
+                unique_currency_dto = CurrenciesDTO.from_tuple_to_dict(
+                    unique_currency)
+                return self.send_json(200, unique_currency_dto)
             else:
                 raise CodeNotFoundError('Код валюты отсутствует в адресе')
         except Exception as e:

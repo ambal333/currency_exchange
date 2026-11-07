@@ -1,11 +1,15 @@
 import sqlite3
 from urllib.parse import parse_qs
 
+from Exception.code_standart_error import CodeStandardError
 from Exception.form_field_exception import FormFieldError
 from controller.base_controller import BaseController
 from DAO.currencies_dao import CurrenciesDao
+from DTO.currencies_dto import CurrenciesDTO
+
 
 class CurrenciesController(BaseController):
+    LENGTH_CODE = 3
     def __init__(self, handler, connection):
         super().__init__(handler, connection)
         self.currencies_dao = CurrenciesDao(connection)
@@ -13,7 +17,8 @@ class CurrenciesController(BaseController):
     def do_GET(self):
         try:
             currencies = self.currencies_dao.get_all_currencies()
-            self.send_json(200, currencies)
+            currencies_dto = CurrenciesDTO.from_tuples_to_dict(currencies)
+            self.send_json(200, currencies_dto)
         except Exception as e:
             self.send_error(e)
 
@@ -24,15 +29,21 @@ class CurrenciesController(BaseController):
                 content_length = int(self.handler.headers.get('Content-length'))
                 post_data = self.handler.rfile.read(content_length)
                 data_decode = parse_qs(post_data.decode('utf-8'))
-                print(data_decode)
                 if ('name' in data_decode and 'code' in data_decode and
                         'sign' in data_decode):
-                    fullname = data_decode.get('name')[0]
+                    name = data_decode.get('name')[0]
                     code = data_decode.get('code')[0]
                     sign = data_decode.get('sign')[0]
-                    added_currency = self.currencies_dao.insert_currency(
-                        fullname, code.upper(), sign)
-                    self.send_json(200, added_currency)
+                    if len(code) == self.LENGTH_CODE:
+                        added_currency = self.currencies_dao.insert_currency(
+                            code.upper(), name, sign)
+                        added_currency_dto = CurrenciesDTO.from_tuple_to_dict(
+                            added_currency)
+                        self.send_json(200, added_currency_dto)
+                    else:
+                        raise CodeStandardError('Код не соответствует '
+                                                'стандарту. ISO 4217 - 3 '
+                                                'символа')
                 else:
                     raise FormFieldError('Отсутствует нужное поле формы')
         except Exception as e:

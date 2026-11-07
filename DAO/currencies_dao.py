@@ -7,7 +7,7 @@ class CurrenciesDao(BaseDao):
     def get_all_currencies(self):
         cur = self.connection.cursor()
         try:
-            cur.execute("SELECT * FROM Currencies")
+            cur.execute("SELECT id, fullname, code, sign FROM Currencies")
             return cur.fetchall()
         finally:
             cur.close()
@@ -23,20 +23,18 @@ class CurrenciesDao(BaseDao):
     def insert_currency(self, code, fullname, sign):
         cur = self.connection.cursor()
         try:
+            print(f'code: {code}')
             cur.execute(
                 f"INSERT INTO Currencies(code, fullname, sign) VALUES (?,?,?)",
                 (code, fullname, sign))
             self.connection.commit()
+            cur.execute('SELECT id, fullname, code, sign FROM Currencies '
+                        'WHERE code = ?', (code, ))
+            data = cur.fetchone()
+            print(data)
+            return data
         finally:
             cur.close()
-# init_database()
-# conn = sqlite3.connect('currencies.db')
-#
-# currencies = CurrenciesDao(conn)
-# currencies.insert_currency('EUR', 'Euro', '%')
-# print(currencies.get_all_currencies())
-#
-# conn.close
 
 
 
