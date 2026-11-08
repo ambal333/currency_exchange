@@ -1,5 +1,7 @@
 from DAO.currencies_dao import CurrenciesDao
 from DTO.service_dto import ServiceDTO
+
+
 class MapperService:
     def __init__(self, connection):
         self.currencies_dao = CurrenciesDao(connection)
@@ -9,7 +11,6 @@ class MapperService:
         targetCurrency = self.currencies_dao.get_unique_currency(code_to)
 
         exchange_rate_dto = ServiceDTO.to_dict((baseCurrency, targetCurrency,
-                                               float(rate), amount,
+                                                float(rate), amount,
                                                 float(converted_amount)))
         return exchange_rate_dto
-

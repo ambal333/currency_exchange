@@ -2,10 +2,32 @@ from dataclasses import dataclass, asdict
 from decimal import Decimal
 
 from DTO.currencies_dto import CurrenciesDTO
+
+
 @dataclass
 class ServiceDTO:
-    baseCurrency: CurrenciesDTO
-    targetCurrency: CurrenciesDTO
+    """DTO класс для формирования ответа REST API для обмена валют.
+
+    Атрибуты
+    --------
+    baseCurrency
+        информация базовой валюты
+    targetCurrency
+        информация целевой валюты
+    rate
+        курс обмена
+    amount
+        количество валюты на обмен
+    convertedAmount
+        переведенная валюта
+
+    Методы
+    ------
+    to_dict
+        метод класса для формирования словаря
+    """
+    baseCurrency: dict
+    targetCurrency: dict
     rate: Decimal
     amount: float
     convertedAmount: Decimal
@@ -21,9 +43,3 @@ class ServiceDTO:
             amount=currency_exchange[3],
             convertedAmount=currency_exchange[4]
         ))
-
-
-
-
-
-

@@ -1,10 +1,20 @@
-import sqlite3
-
 from DAO.base_dao import BaseDao
 
-class CurrenciesDao(BaseDao):
 
-    def get_all_currencies(self):
+class CurrenciesDao(BaseDao):
+    """Используется для получения и добавления валют в базу данных
+
+    Методы
+    ------
+    get_all_currencies
+        получение всех валют из бд
+    get_unique_currency
+        получение конкретной валюты по коду
+    insert_currency
+        добавление новой валюты в бд
+    """
+
+    def get_all_currencies(self) -> list[tuple]:
         cur = self.connection.cursor()
         try:
             cur.execute("SELECT id, fullname, code, sign FROM Currencies")
@@ -12,7 +22,7 @@ class CurrenciesDao(BaseDao):
         finally:
             cur.close()
 
-    def get_unique_currency(self, code):
+    def get_unique_currency(self, code: int) -> tuple:
         cur = self.connection.cursor()
         try:
             cur.execute("SELECT * FROM Currencies WHERE code = ?", (code,))
@@ -20,18 +30,20 @@ class CurrenciesDao(BaseDao):
         finally:
             cur.close()
 
-    def insert_currency(self, code, fullname, sign):
+    def insert_currency(self, code: int, fullname: str, sign: str) -> tuple:
         cur = self.connection.cursor()
         try:
-            print(f'code: {code}')
             cur.execute(
-                f"INSERT INTO Currencies(code, fullname, sign) VALUES (?,?,?)",
-                (code, fullname, sign))
+                "INSERT INTO Currencies(code, fullname, sign) VALUES (?,?,?)",
+                (code, fullname, sign)
+                )
             self.connection.commit()
+
             cur.execute('SELECT id, fullname, code, sign FROM Currencies '
-                        'WHERE code = ?', (code, ))
+                        'WHERE code = ?',
+                        (code,)
+                        )
             data = cur.fetchone()
-            print(data)
             return data
         finally:
             cur.close()

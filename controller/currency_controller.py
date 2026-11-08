@@ -1,3 +1,5 @@
+from http.client import HTTPException
+
 from DTO.currencies_dto import CurrenciesDTO
 from Exception.code_exception import CodeNotFoundError
 from Exception.currency_not_found import CurrencyNotFound
@@ -6,6 +8,25 @@ from DAO.currencies_dao import CurrenciesDao
 
 
 class CurrencyController(BaseController):
+    """Используется для получения конкретной валюты.
+
+    Атрибуты
+    --------
+    handler
+        контроллер для обработки пути
+    connection
+        обеспечивает связь с бд
+
+    Методы
+    ------
+    do_GET
+        обрабатывает запрос на получение конкретной валюты
+    do_POST
+        генерирует исключение, при обращении к методу
+    do_PATCH
+        генерирует исключение, при обращении к методу
+    """
+
     def __init__(self, handler, connection):
         super().__init__(handler, connection)
         self.currency_dao = CurrenciesDao(connection)
@@ -17,7 +38,7 @@ class CurrencyController(BaseController):
                 current_path, code = path
                 unique_currency = self.currency_dao.get_unique_currency(
                     code.upper())
-                print(unique_currency)
+
                 if unique_currency is None:
                     raise CurrencyNotFound('Валюта не найдена')
                 unique_currency_dto = CurrenciesDTO.from_tuple_to_dict(
@@ -29,4 +50,13 @@ class CurrencyController(BaseController):
             self.send_error(e)
 
     def do_POST(self):
-        pass
+        try:
+            raise HTTPException
+        except Exception as e:
+            self.send_error(e)
+
+    def do_PATCH(self):
+        try:
+            raise HTTPException
+        except Exception as e:
+            self.send_error(e)

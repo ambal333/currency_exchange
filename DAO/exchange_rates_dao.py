@@ -1,4 +1,3 @@
-import sqlite3
 from typing import Union
 
 from DAO.base_dao import BaseDao
@@ -8,21 +7,36 @@ from Exception.not_exist_in_db import NotExistInDb
 
 
 class ExchangeRatesDao(BaseDao):
+    """Используется для получения и обновления курсов обмена валют из бд.
 
-    def get_unique_exchange_rates(self, code_1: str, code_2: str):
+    Методы
+    ------
+    get_unique_exchange_rates
+        получение конкретного обменного курса по кодам из бд
+    get_exchange_rates
+        получение всех обменных курсов из бд
+    insert_exchange_rates
+        добавление нового обменного курса в бд
+    patch_exchange_rates
+        обновление существующего обменного курса в бд
+    """
+
+    def get_unique_exchange_rate(self, code_1: str, code_2: str) -> tuple:
         cur = self.connection.cursor()
         try:
             cur.execute('SELECT er.id, bc.id, bc.fullname, '
                         'bc.code, bc.sign, tc.id, tc.fullname, '
                         'tc.code, tc.sign, er.rate FROM ExchangeRates as er '
                         'JOIN Currencies as bc ON er.basecurrencyid = bc.id '
-                        'JOIN Currencies as tc ON er.targetcurrencyid = tc.id WHERE (bc.code, tc.code) = (?, ?);',
-                        (code_1, code_2))
+                        'JOIN Currencies as tc ON er.targetcurrencyid = tc.id '
+                        'WHERE (bc.code, tc.code) = (?, ?);',
+                        (code_1, code_2)
+                        )
             return cur.fetchone()
         finally:
             cur.close()
 
-    def get_exchange_rates(self):
+    def get_exchange_rates(self) -> list[tuple]:
         cur = self.connection.cursor()
         try:
             cur.execute('SELECT er.id, bc.id, bc.fullname, '
@@ -34,39 +48,48 @@ class ExchangeRatesDao(BaseDao):
         finally:
             cur.close()
 
-    def insert_exchange_rates(self, code_1: str, code_2: str, rate: Union[int, float]):
+    def insert_exchange_rates(self, code_1: str, code_2: str,
+                              rate: Union[int, float]) -> tuple:
         cur = self.connection.cursor()
         try:
             id_1 = self.get_currency_id_by_code(code_1)
             id_2 = self.get_currency_id_by_code(code_2)
             print(id_1, id_2)
             if id_1 is not None and id_2 is not None:
-                is_unique = self.get_unique_exchange_rates(code_1, code_2)
+                is_unique = self.get_unique_exchange_rate(code_1, code_2)
                 if is_unique:
-                    raise IntegrityExchangeError('Валютная пара с таким кодом уже существует')
+                    raise IntegrityExchangeError(
+                        'Валютная пара с таким кодом уже существует')
 
                 cur.execute('INSERT INTO ExchangeRates(basecurrencyid, '
-                                'targetcurrencyid, rate) VALUES (?, ?, ?)',
-                                (id_1[0], id_2[0], rate))
+                            'targetcurrencyid, rate) VALUES (?, ?, ?)',
+                            (id_1[0], id_2[0], rate))
                 self.connection.commit()
-                data = self.get_unique_exchange_rates(code_1, code_2)
-                return data
+
+                unique_ex_rate = self.get_unique_exchange_rate(code_1, code_2)
+                return unique_ex_rate
             else:
-                raise NotExistInDb('Одна (или обе) валюта из валютной пары не существует в БД')
+                raise NotExistInDb(
+                    'Одна (или обе) валюта из валютной пары не существует в БД')
         finally:
             cur.close()
 
-    def patch_exchange_rates(self, code_1: str, code_2: str, rate: Union[int, float]):
+    def patch_exchange_rates(self, code_1: str, code_2: str,
+                             rate: Union[int, float]) -> None:
         cur = self.connection.cursor()
         try:
-            exchange_rate = self.get_unique_exchange_rates(code_1, code_2)
+            exchange_rate = self.get_unique_exchange_rate(code_1, code_2)
             if exchange_rate:
                 cur.execute('UPDATE ExchangeRates SET rate = ? WHERE '
-                            'basecurrencyid = (SELECT id FROM Currencies WHERE code = ?) AND '
-                            'targetcurrencyid = (SELECT id FROM Currencies WHERE code = ?)',
+                            'basecurrencyid = '
+                            '(SELECT id FROM Currencies WHERE code = ?)'
+                            ' AND '
+                            'targetcurrencyid = '
+                            '(SELECT id FROM Currencies WHERE code = ?)',
                             (rate, code_1, code_2))
                 self.connection.commit()
             else:
-                raise NotExistExchangeRate('Валютная пара отсутствует в базе данных')
+                raise NotExistExchangeRate(
+                    'Валютная пара отсутствует в базе данных')
         finally:
             cur.close()

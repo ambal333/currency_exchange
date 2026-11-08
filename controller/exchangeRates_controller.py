@@ -1,4 +1,4 @@
-from enum import unique
+from http.client import HTTPException
 from urllib.parse import parse_qs
 
 from Exception.form_field_exception import FormFieldError
@@ -8,6 +8,29 @@ from DTO.exchange_rates_dto import ExchangeRatesDTO
 
 
 class ExchangeRatesController(BaseController):
+    """Класс служит для получения конкретного обменного курса и добавления
+    нового обменного курса в базу.
+
+    Атрибуты
+    --------
+    exchange_rates_dao
+        экземпляр класса для получения обменных курсов из бд и добавления
+        нового обменного курса в бд
+    handler
+        контроллер для обработки пути
+    connection
+        обеспечивает связь с бд
+
+    Методы
+    ------
+    do_GET
+        обрабатывает запрос на получение всех обменных курсов из бд
+    do_POST
+        обрабатывает запрос на добавление нового обменного курса в бд
+    do_PATCH
+        генерирует исключение при обращении к методу
+    """
+
     def __init__(self, handler, connection):
         super().__init__(handler, connection)
         self.exchange_rates_dao = ExchangeRatesDao(connection)
@@ -30,6 +53,7 @@ class ExchangeRatesController(BaseController):
                 post_data = self.handler.rfile.read(content_length).decode(
                     'utf-8')
                 param = parse_qs(post_data)
+
                 if ('baseCurrencyCode' in param and 'targetCurrencyCode' in
                         param and 'rate' in param):
                     basecurrency_code = param.get('baseCurrencyCode')[
@@ -47,5 +71,11 @@ class ExchangeRatesController(BaseController):
                 else:
                     raise FormFieldError('Отсутствует нужное поле формы')
 
+        except Exception as e:
+            self.send_error(e)
+
+    def do_PATCH(self):
+        try:
+            raise HTTPException
         except Exception as e:
             self.send_error(e)

@@ -4,7 +4,7 @@ from http_requests.server import RequestServer
 
 if __name__ == '__main__':
     host, port = 'localhost', 8000
-    server = HTTPServer((host,port), RequestServer)
+    server = HTTPServer((host, port), RequestServer)
     database = DatabaseConnection()
     server.database = database
     try:
