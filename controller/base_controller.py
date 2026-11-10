@@ -10,7 +10,7 @@ from Exception.code_exception import CodeNotFoundError
 from Exception.currency_not_found import CurrencyNotFound
 from Exception.form_field_exception import FormFieldError
 from Exception.not_exist_exchange_rate import NotExistExchangeRate
-from Exception.not_exist_in_db import NotExistInDb
+from Exception.currency_exchange_not_exist import CurrExchangeNotExist
 from abc import ABC, abstractmethod
 from http.server import BaseHTTPRequestHandler
 from Exception.path_not_found import PathNotFound
@@ -70,45 +70,47 @@ class BaseController(ABC):
     def send_error(self, error: Exception) -> None:
         try:
             if isinstance(error, FormFieldError):
-                message = 'Отсутствует нужное поле формы'
+                message = {'message': 'Отсутствует нужное поле формы'}
                 self.send_json(400, message)
             if isinstance(error, sqlite3.IntegrityError):
-                message = 'Валюта с таким кодом уже существует'
+                message = {'message': 'Валюта с таким кодом уже существует'}
                 self.send_json(409, message)
             if isinstance(error, sqlite3.InternalError):
-                message = 'база данных недоступна'
+                message = {'message': 'база данных недоступна'}
                 self.send_json(500, message)
             if isinstance(error, CodeNotFoundError):
-                message = 'Код валюты отсутствует в адресе'
+                message = {'message': 'Код валюты отсутствует в адресе'}
                 self.send_json(400, message)
             if isinstance(error, CurrencyNotFound):
-                message = 'Валюта не найдена'
+                message = {'message': 'Валюта не найдена'}
                 self.send_json(404, message)
-            if isinstance(error, NotExistInDb):
-                message = ('Одна (или обе) валюта из валютной пары'
-                           ' не существует в БД')
+            if isinstance(error, CurrExchangeNotExist):
+                message = ({'message': 'Одна (или обе) валюта из валютной пары'
+                                       ' не существует в БД'})
                 self.send_json(404, message)
             if isinstance(error, IntegrityExchangeError):
-                message = 'Валютная пара с таким кодом уже существует'
+                message = {'message': 'Валютная пара с таким кодом уже '
+                                      'существует'}
                 self.send_json(409, message)
             if isinstance(error, NotExistExchangeRate):
-                message = 'Валютная пара отсутствует в базе данных'
+                message = {'message': 'Валютная пара отсутствует в базе данных'}
                 self.send_json(404, message)
             if isinstance(error, ExchangeRateNotFound):
-                message = 'Обменный курс для пары не найден'
+                message = {'message': 'Обменный курс для пары не найден'}
                 self.send_json(404, message)
             if isinstance(error, ExchangeRateCodeNotFound):
-                message = 'Коды валют пары отсутствуют в адресе'
+                message = {'message': 'Коды валют пары отсутствуют в адресе'}
                 self.send_json(400, message)
             if isinstance(error, CodeStandardError):
-                message = ('Код не соответствует стандарту. ISO 4217 - 3 '
-                           'символа')
+                message = ({'message': 'Код не соответствует стандарту.'
+                                       ' ISO 4217 - 3 символа'
+                            })
                 self.send_json(400, message)
             if isinstance(error, PathNotFound):
-                message = 'Такого пути нет'
+                message = {'message': 'Такого пути нет'}
                 self.send_json(404, message)
             if isinstance(error, HTTPException):
-                message = 'Некорректный запрос'
+                message = {'message': 'Некорректный запрос'}
                 self.send_json(404, message)
         except Exception as e:
-            self.send_json(400, e)
+            self.send_json(400, {'message': e})

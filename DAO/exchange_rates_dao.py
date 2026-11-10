@@ -3,7 +3,7 @@ from typing import Union
 from DAO.base_dao import BaseDao
 from Exception.integrity_exchange_error import IntegrityExchangeError
 from Exception.not_exist_exchange_rate import NotExistExchangeRate
-from Exception.not_exist_in_db import NotExistInDb
+from Exception.currency_exchange_not_exist import CurrExchangeNotExist
 
 
 class ExchangeRatesDao(BaseDao):
@@ -69,7 +69,7 @@ class ExchangeRatesDao(BaseDao):
                 unique_ex_rate = self.get_unique_exchange_rate(code_1, code_2)
                 return unique_ex_rate
             else:
-                raise NotExistInDb(
+                raise CurrExchangeNotExist(
                     'Одна (или обе) валюта из валютной пары не существует в БД')
         finally:
             cur.close()

@@ -6,7 +6,7 @@ from DTO.currencies_dto import CurrenciesDTO
 
 @dataclass
 class ExchangeRatesDTO:
-    """Используется для формирования готового ответа для REST API для
+    """Dataclass используется для формирования готового ответа для REST API для
     обменных курсов.
 
     Атрибуты
@@ -36,7 +36,8 @@ class ExchangeRatesDTO:
     def from_tuple_to_dict(cls, exchange_rates: tuple) -> dict:
         return asdict(cls(
             id=exchange_rates[0],
-            baseCurrency=CurrenciesDTO.from_tuple_to_dict(exchange_rates[1:5]),
+            baseCurrency=CurrenciesDTO.from_tuple_to_dict(exchange_rates[
+                                                               1:5]),
             targetCurrency=CurrenciesDTO.from_tuple_to_dict(
                 exchange_rates[5:9]),
             rate=exchange_rates[9]

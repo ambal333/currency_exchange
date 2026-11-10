@@ -5,6 +5,7 @@ from controller.base_controller import BaseController
 from service.service_exchange import ExchangeRatesService
 from Exception.form_field_exception import FormFieldError
 from Mapper.mapper_service import MapperService
+from DTO.service_dto import ServiceDTO
 
 
 class ServiceExchangeController(BaseController):
@@ -49,21 +50,25 @@ class ServiceExchangeController(BaseController):
 
             if None not in dict_param.values():
                 dict_param = {
-                              'code_from': dict_param['code_from'][0].upper(),
-                              'code_to': dict_param['code_to'][0].upper(),
-                              'amount': dict_param['amount'][0].upper()
-                              }
-
+                    'code_from': dict_param['code_from'][0].upper(),
+                    'code_to': dict_param['code_to'][0].upper(),
+                    'amount': dict_param['amount'][0].upper()
+                }
                 converted_amount = ExchangeRatesService(
                     self.connection).calculate_course(dict_param)
+                print(converted_amount)
                 # конвертируем средства из одной валюту в другую
-                exchange_rates_dto = self.mapper.get_dto_dict(
-                    dict_param['code_from'], dict_param['code_to'],
-                    converted_amount[1], dict_param['amount'],
-                    converted_amount[0])
+                base_currency, target_currency = self.mapper.get_bc_tc(
+                    dict_param['code_from'],
+                    dict_param['code_to'])
+                exchange_rates_dto = ServiceDTO.to_dict(
+                    (base_currency, target_currency,
+                     float(converted_amount[1]), dict_param['amount'],
+                     float(converted_amount[0])))
                 self.send_json(200, exchange_rates_dto)
             else:
                 raise FormFieldError('Отсутствует нужное поле формы')
+
         except Exception as e:
             self.send_error(e)
 

@@ -5,6 +5,20 @@ from controller.base_controller import BaseController
 
 
 class RequestServer(BaseHTTPRequestHandler):
+    """Класс содержащий REST API методы
+
+    Методы
+    --------
+    do_GET
+        перенаправляет в контроллер и вызывает метод do_GET
+    do_POST
+        перенаправляет в контроллер и вызывает метод do_POST
+    do_PATCH
+        перенаправляет в контроллер и вызывает метод do_PATCH
+    search_controller
+        определяет путь запроса и возвращает соответствующий класс контроллера
+    """
+
     def do_GET(self):
         try:
             controller: BaseController = self.search_controller()
@@ -31,13 +45,7 @@ class RequestServer(BaseHTTPRequestHandler):
             controller = RouterPath.search_path(self.path)
             return controller(self, self.server.database.connection)
         except Exception as e:
-            print(f'error: {e}')
+            print({'error': {e}})
 
     def do_DELETE(self):
         pass
-
-
-
-
-
-

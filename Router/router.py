@@ -6,7 +6,6 @@ from controller.exchangeRates_controller import ExchangeRatesController
 from controller.exchangeRate_controller import ExchangeRateController
 from controller.service_controller import ServiceExchangeController
 
-
 routes = {
     'currencies': CurrenciesController,
     'currency': CurrencyController,
@@ -15,7 +14,18 @@ routes = {
     'exchange': ServiceExchangeController
 }
 
+
 class RouterPath:
+    """Класс служит для поиска пути запроса и определения соответствующего
+    класса контроллера.
+
+    Методы
+    ------
+    search_patch
+        статический метод для поиска пути запроса
+
+    """
+
     @staticmethod
     def search_path(request_path: str):
         path = urlparse(request_path).path

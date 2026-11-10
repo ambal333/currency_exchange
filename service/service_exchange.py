@@ -1,10 +1,30 @@
-from decimal import Decimal, getcontext, ROUND_HALF_UP
+from decimal import Decimal, ROUND_HALF_UP
 
 from DAO.exchange_rates_dao import ExchangeRatesDao
 from Exception.currency_not_found import CurrencyNotFound
 from database.db_connection import DatabaseConnection
 from DTO.exchange_rates_dto import ExchangeRatesDTO
+
+
 class ExchangeRatesService:
+    """Класс служит для расчета конвертируемой валюты.
+    Атрибуты
+    --------
+    __dao
+        экземпляр класса дял работы с базой данных
+
+    Методы
+    ------
+    calculate_course
+        метод для выборки сценария расчета
+    direct_course
+        метод для расчета прямого сценария
+    reverse_course
+        метод для расчета обратного сценария
+    course_from_usd
+        метод для расчета сценария usd-a, usd-b
+    """
+
     def __init__(self, connection: DatabaseConnection):
         self.__dao = ExchangeRatesDao(connection)
 
@@ -24,18 +44,20 @@ class ExchangeRatesService:
             return reverse_curse
 
         exchange_usd_from = self.__dao.get_unique_exchange_rate('USD',
-                                                                info.get('code_from'))
+                                                                info.get(
+                                                                    'code_from'))
         exchange_usd_to = self.__dao.get_unique_exchange_rate('USD',
-                                                              info.get('code_to'))
+                                                              info.get(
+                                                                  'code_to'))
 
         if exchange_usd_from and exchange_usd_to:
             course_from_usd = self.course_from_usd(exchange_usd_from,
-                                            exchange_usd_to, info)
+                                                   exchange_usd_to, info)
             return course_from_usd
         raise CurrencyNotFound('Валюта не найдена')
 
-
-    def direct_course(self, exchange_rate, info):
+    @staticmethod
+    def direct_course(exchange_rate, info):
         exchange_rates_dto = ExchangeRatesDTO.from_tuple_to_dict(
             exchange_rate)
         rate = Decimal(str(exchange_rates_dto.get('rate')))
@@ -45,7 +67,8 @@ class ExchangeRatesService:
         return converted_amount, rate.quantize(Decimal('0.01'),
                                                rounding=ROUND_HALF_UP)
 
-    def reverse_course(self,exchange_rate_reverse, info):
+    @staticmethod
+    def reverse_course(exchange_rate_reverse, info):
         exchange_rates_dto_reverse = ExchangeRatesDTO.from_tuple_to_dict(
             exchange_rate_reverse)
         rate = 1 / Decimal(str(exchange_rates_dto_reverse.get('rate')))
@@ -56,7 +79,8 @@ class ExchangeRatesService:
         return converted_reverse_amount, rate.quantize(Decimal('0.01'),
                                                        rounding=ROUND_HALF_UP)
 
-    def course_from_usd(self, exchange_usd_from, exchange_usd_to, info):
+    @staticmethod
+    def course_from_usd(exchange_usd_from, exchange_usd_to, info):
         exchange_usd_from_dto = ExchangeRatesDTO.from_tuple_to_dict(
             exchange_usd_from)
         exchange_usd_to_dto = ExchangeRatesDTO.from_tuple_to_dict(

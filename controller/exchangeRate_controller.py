@@ -100,3 +100,4 @@ class ExchangeRateController(BaseController):
                     raise FormFieldError('Отсутствует нужное поле формы')
         except Exception as e:
             self.send_error(e)
+

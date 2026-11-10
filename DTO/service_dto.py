@@ -6,7 +6,7 @@ from DTO.currencies_dto import CurrenciesDTO
 
 @dataclass
 class ServiceDTO:
-    """DTO класс для формирования ответа REST API для обмена валют.
+    """Dataclass класс для формирования ответа REST API для обмена валют.
 
     Атрибуты
     --------
@@ -38,7 +38,8 @@ class ServiceDTO:
             baseCurrency=CurrenciesDTO.from_tuple_to_dict(currency_exchange[
                                                               0]),
             targetCurrency=CurrenciesDTO.from_tuple_to_dict(
-                currency_exchange[1]),
+                currency_exchange[1]
+            ),
             rate=currency_exchange[2],
             amount=currency_exchange[3],
             convertedAmount=currency_exchange[4]
