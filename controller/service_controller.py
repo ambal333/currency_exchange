@@ -1,10 +1,11 @@
+from decimal import Decimal, ROUND_HALF_UP
 from http.client import HTTPException
 from urllib.parse import urlparse, parse_qs
 
 from controller.base_controller import BaseController
 from service.service_exchange import ExchangeRatesService
 from Exception.form_field_exception import FormFieldError
-from Mapper.mapper_service import MapperService
+from Mappers.mapper_service import MapperService
 from DTO.service_dto import ServiceDTO
 
 
@@ -52,19 +53,25 @@ class ServiceExchangeController(BaseController):
                 dict_param = {
                     'code_from': dict_param['code_from'][0].upper(),
                     'code_to': dict_param['code_to'][0].upper(),
-                    'amount': dict_param['amount'][0].upper()
+                    'amount': dict_param['amount'][0]
                 }
-                converted_amount = ExchangeRatesService(
+                converted_amount, rate = ExchangeRatesService(
                     self.connection).calculate_course(dict_param)
-                print(converted_amount)
+
                 # конвертируем средства из одной валюту в другую
-                base_currency, target_currency = self.mapper.get_bc_tc(
+                base_currency, target_currency = self.mapper.to_dto(
                     dict_param['code_from'],
                     dict_param['code_to'])
-                exchange_rates_dto = ServiceDTO.to_dict(
-                    (base_currency, target_currency,
-                     float(converted_amount[1]), dict_param['amount'],
-                     float(converted_amount[0])))
+
+                exchange_rates_dto = ServiceDTO.get_exchange_rate((
+                    base_currency, target_currency,
+                    float(rate),
+                    float(Decimal(dict_param['amount']).quantize(Decimal(
+                        '0.01'),
+                                                   rounding=ROUND_HALF_UP)),
+                    float(converted_amount)
+                ))
+
                 self.send_json(200, exchange_rates_dto)
             else:
                 raise FormFieldError('Отсутствует нужное поле формы')

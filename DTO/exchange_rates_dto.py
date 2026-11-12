@@ -22,10 +22,10 @@ class ExchangeRatesDTO:
 
     Методы
     ------
-    from_tuple_to_dict
-        метод класса для формирования одной валюты
-    from_tuples_to_dict
-        метод класса для формирования списка валют
+    get_exchange_rate
+        метод класса для формирования одного обменного курса из бд
+    get_exchange_rates
+        метод класса для формирования всех обменных курсов из бд
     """
     id: int
     baseCurrency: dict
@@ -33,16 +33,16 @@ class ExchangeRatesDTO:
     rate: Decimal
 
     @classmethod
-    def from_tuple_to_dict(cls, exchange_rates: tuple) -> dict:
+    def get_exchange_rate(cls, exchange_rates: tuple) -> dict:
         return asdict(cls(
             id=exchange_rates[0],
-            baseCurrency=CurrenciesDTO.from_tuple_to_dict(exchange_rates[
+            baseCurrency=CurrenciesDTO.get_currency(exchange_rates[
                                                                1:5]),
-            targetCurrency=CurrenciesDTO.from_tuple_to_dict(
+            targetCurrency=CurrenciesDTO.get_currency(
                 exchange_rates[5:9]),
             rate=exchange_rates[9]
         ))
 
     @classmethod
-    def from_tuples_to_dict(cls, exchange_rates: list[tuple]) -> list[dict]:
-        return [cls.from_tuple_to_dict(row) for row in exchange_rates]
+    def get_exchange_rates(cls, exchange_rates: list[tuple]) -> list[dict]:
+        return [cls.get_exchange_rate(row) for row in exchange_rates]

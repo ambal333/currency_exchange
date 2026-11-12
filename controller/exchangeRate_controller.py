@@ -1,3 +1,4 @@
+from decimal import Decimal, ROUND_HALF_UP
 from http.client import HTTPException
 from urllib.parse import parse_qs
 
@@ -47,12 +48,13 @@ class ExchangeRateController(BaseController):
                 code_2 = code[3:].upper()
                 unique_exchange_rate = (
                     self.dao.get_unique_exchange_rate(code_1, code_2))
+
                 if unique_exchange_rate is None:
                     raise ExchangeRateNotFound(
                         'Обменный курс для пары не найден')
 
                 unique_exchange_rate_dto = (
-                    ExchangeRatesDTO.from_tuple_to_dict(unique_exchange_rate))
+                    ExchangeRatesDTO.get_exchange_rate(unique_exchange_rate))
                 return self.send_json(200, unique_exchange_rate_dto)
             else:
                 raise ExchangeRateCodeNotFound(
@@ -79,7 +81,9 @@ class ExchangeRateController(BaseController):
                 dict_param = parse_qs(patch_data)
 
                 if 'rate' in dict_param:
-                    rate = float(dict_param.get('rate')[0])
+                    rate = Decimal(str(dict_param.get('rate')[0])).quantize(
+                        Decimal('0.000001'),
+                        rounding=ROUND_HALF_UP)
 
                     if len(path[1]) == 6:
                         code_1 = path[1][:3].upper()
@@ -88,7 +92,7 @@ class ExchangeRateController(BaseController):
                         update_rates = (self.dao.get_unique_exchange_rate(
                             code_1, code_2))
 
-                        rates_dto = ExchangeRatesDTO.from_tuple_to_dict(
+                        rates_dto = ExchangeRatesDTO.get_exchange_rate(
                             update_rates
                         )
                         self.send_json(200, rates_dto)
@@ -100,4 +104,3 @@ class ExchangeRateController(BaseController):
                     raise FormFieldError('Отсутствует нужное поле формы')
         except Exception as e:
             self.send_error(e)
-

@@ -5,7 +5,7 @@ from Exception.code_exception import CodeNotFoundError
 from Exception.currency_not_found import CurrencyNotFound
 from controller.base_controller import BaseController
 from DAO.currencies_dao import CurrenciesDao
-
+from Exception.code_standart_error import CodeStandardError
 
 class CurrencyController(BaseController):
     """Используется для получения конкретной валюты.
@@ -36,12 +36,15 @@ class CurrencyController(BaseController):
             path = self.handler.path.split('/')[1:]
             if len(path) == 2 and path[1] != '':
                 current_path, code = path
+                if len(code) != 3:
+                    raise CodeStandardError('Код должен соответствовать '
+                                            'стандарту')
                 unique_currency = self.currency_dao.get_unique_currency(
                     code.upper())
 
                 if unique_currency is None:
                     raise CurrencyNotFound('Валюта не найдена')
-                unique_currency_dto = CurrenciesDTO.from_tuple_to_dict(
+                unique_currency_dto = CurrenciesDTO.get_currency(
                     unique_currency)
                 return self.send_json(200, unique_currency_dto)
             else:

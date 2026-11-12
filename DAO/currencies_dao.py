@@ -22,7 +22,7 @@ class CurrenciesDao(BaseDao):
         finally:
             cur.close()
 
-    def get_unique_currency(self, code: int) -> tuple:
+    def get_unique_currency(self, code: str) -> tuple:
         cur = self.connection.cursor()
         try:
             cur.execute("SELECT * FROM Currencies WHERE code = ?", (code,))
@@ -30,7 +30,7 @@ class CurrenciesDao(BaseDao):
         finally:
             cur.close()
 
-    def insert_currency(self, code: int, fullname: str, sign: str) -> tuple:
+    def insert_currency(self, code: str, fullname: str, sign: str) -> tuple:
         cur = self.connection.cursor()
         try:
             cur.execute(

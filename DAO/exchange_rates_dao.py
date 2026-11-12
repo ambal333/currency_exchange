@@ -1,3 +1,4 @@
+from decimal import Decimal
 from typing import Union
 
 from DAO.base_dao import BaseDao
@@ -49,12 +50,12 @@ class ExchangeRatesDao(BaseDao):
             cur.close()
 
     def insert_exchange_rates(self, code_1: str, code_2: str,
-                              rate: Union[int, float]) -> tuple:
+                              rate: Decimal) -> tuple:
         cur = self.connection.cursor()
         try:
             id_1 = self.get_currency_id_by_code(code_1)
             id_2 = self.get_currency_id_by_code(code_2)
-            print(id_1, id_2)
+
             if id_1 is not None and id_2 is not None:
                 is_unique = self.get_unique_exchange_rate(code_1, code_2)
                 if is_unique:
@@ -63,10 +64,11 @@ class ExchangeRatesDao(BaseDao):
 
                 cur.execute('INSERT INTO ExchangeRates(basecurrencyid, '
                             'targetcurrencyid, rate) VALUES (?, ?, ?)',
-                            (id_1[0], id_2[0], rate))
+                            (id_1[0], id_2[0], float(rate)))
                 self.connection.commit()
 
                 unique_ex_rate = self.get_unique_exchange_rate(code_1, code_2)
+
                 return unique_ex_rate
             else:
                 raise CurrExchangeNotExist(
@@ -75,7 +77,7 @@ class ExchangeRatesDao(BaseDao):
             cur.close()
 
     def patch_exchange_rates(self, code_1: str, code_2: str,
-                             rate: Union[int, float]) -> None:
+                             rate: Decimal) -> None:
         cur = self.connection.cursor()
         try:
             exchange_rate = self.get_unique_exchange_rate(code_1, code_2)
@@ -86,7 +88,7 @@ class ExchangeRatesDao(BaseDao):
                             ' AND '
                             'targetcurrencyid = '
                             '(SELECT id FROM Currencies WHERE code = ?)',
-                            (rate, code_1, code_2))
+                            (float(rate), code_1, code_2))
                 self.connection.commit()
             else:
                 raise NotExistExchangeRate(

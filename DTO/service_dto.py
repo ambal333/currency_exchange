@@ -23,21 +23,21 @@ class ServiceDTO:
 
     Методы
     ------
-    to_dict
+    get_exchange_rate
         метод класса для формирования словаря
     """
     baseCurrency: dict
     targetCurrency: dict
-    rate: Decimal
+    rate: float
     amount: float
-    convertedAmount: Decimal
+    convertedAmount: float
 
     @classmethod
-    def to_dict(cls, currency_exchange: tuple) -> dict:
+    def get_exchange_rate(cls, currency_exchange: tuple) -> dict:
         return asdict(cls(
-            baseCurrency=CurrenciesDTO.from_tuple_to_dict(currency_exchange[
+            baseCurrency=CurrenciesDTO.get_currency(currency_exchange[
                                                               0]),
-            targetCurrency=CurrenciesDTO.from_tuple_to_dict(
+            targetCurrency=CurrenciesDTO.get_currency(
                 currency_exchange[1]
             ),
             rate=currency_exchange[2],

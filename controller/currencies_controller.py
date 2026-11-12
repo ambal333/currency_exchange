@@ -38,7 +38,7 @@ class CurrenciesController(BaseController):
     def do_GET(self):
         try:
             currencies = self.currencies_dao.get_all_currencies()
-            currencies_dto = CurrenciesDTO.from_tuples_to_dict(currencies)
+            currencies_dto = CurrenciesDTO.get_currencies(currencies)
             self.send_json(200, currencies_dto)
         except Exception as e:
             self.send_error(e)
@@ -61,7 +61,7 @@ class CurrenciesController(BaseController):
                     if len(code) == self.LENGTH_CODE:
                         added_currency = self.currencies_dao.insert_currency(
                             code.upper(), name, sign)
-                        added_currency_dto = CurrenciesDTO.from_tuple_to_dict(
+                        added_currency_dto = CurrenciesDTO.get_currency(
                             added_currency)
                         self.send_json(200, added_currency_dto)
                     else:

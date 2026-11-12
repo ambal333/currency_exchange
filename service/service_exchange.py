@@ -58,32 +58,31 @@ class ExchangeRatesService:
 
     @staticmethod
     def direct_course(exchange_rate, info):
-        exchange_rates_dto = ExchangeRatesDTO.from_tuple_to_dict(
+        exchange_rates_dto = ExchangeRatesDTO.get_exchange_rate(
             exchange_rate)
         rate = Decimal(str(exchange_rates_dto.get('rate')))
         amount = Decimal(str(info.get('amount')))
-        converted_amount = (rate * amount).quantize(Decimal('0.01'),
-                                                    rounding=ROUND_HALF_UP)
-        return converted_amount, rate.quantize(Decimal('0.01'),
-                                               rounding=ROUND_HALF_UP)
+        converted_amount = (rate * amount)
+        return (converted_amount.quantize(Decimal('0.01'),
+                                          rounding=ROUND_HALF_UP),
+                rate.quantize(Decimal('0.000001'), rounding=ROUND_HALF_UP))
 
     @staticmethod
     def reverse_course(exchange_rate_reverse, info):
-        exchange_rates_dto_reverse = ExchangeRatesDTO.from_tuple_to_dict(
+        exchange_rates_dto_reverse = ExchangeRatesDTO.get_exchange_rate(
             exchange_rate_reverse)
         rate = 1 / Decimal(str(exchange_rates_dto_reverse.get('rate')))
         amount = Decimal(str(info.get('amount')))
-        converted_reverse_amount = (Decimal(rate) * Decimal(amount)).quantize(
-            Decimal('0.01'),
-            rounding=ROUND_HALF_UP)
-        return converted_reverse_amount, rate.quantize(Decimal('0.01'),
-                                                       rounding=ROUND_HALF_UP)
+        converted_reverse_amount = (Decimal(rate) * Decimal(amount))
+        return (converted_reverse_amount.quantize(Decimal('0.01'),
+                                                  rounding=ROUND_HALF_UP),
+                rate.quantize(Decimal('0.000001'), rounding=ROUND_HALF_UP))
 
     @staticmethod
     def course_from_usd(exchange_usd_from, exchange_usd_to, info):
-        exchange_usd_from_dto = ExchangeRatesDTO.from_tuple_to_dict(
+        exchange_usd_from_dto = ExchangeRatesDTO.get_exchange_rate(
             exchange_usd_from)
-        exchange_usd_to_dto = ExchangeRatesDTO.from_tuple_to_dict(
+        exchange_usd_to_dto = ExchangeRatesDTO.get_exchange_rate(
             exchange_usd_to)
         rate_from = exchange_usd_from_dto.get('rate')
         rate_to = exchange_usd_to_dto.get('rate')
@@ -91,6 +90,7 @@ class ExchangeRatesService:
         convert_amount = ((Decimal(str(info.get('amount'))) *
                            rate_from_to)).quantize(Decimal('0.01'),
                                                    rounding=ROUND_HALF_UP)
-        round_rate_from_to = rate_from_to.quantize(Decimal('0.01'),
-                                                   rounding=ROUND_HALF_UP)
-        return convert_amount, round_rate_from_to
+        return (convert_amount.quantize(Decimal('0.01'),
+                                        rounding=ROUND_HALF_UP),
+                rate_from_to.quantize(Decimal('0.000001'),
+                                      rounding=ROUND_HALF_UP))
