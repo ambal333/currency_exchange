@@ -71,9 +71,10 @@ class ExchangeRateController(BaseController):
     def do_PATCH(self):
         try:
             path = self.handler.path.split('/')[1:]
-            content_type = str(self.handler.headers.get('Content-type'))
+            content_type = str(self.handler.headers.get(
+                'Content-type')).split(';')[0].strip().lower()
 
-            if content_type.strip() == 'application/x-www-form-urlencoded':
+            if content_type == 'application/x-www-form-urlencoded':
                 content_length = int(self.handler.headers.get(
                     'content-length'))
                 patch_data = self.handler.rfile.read(

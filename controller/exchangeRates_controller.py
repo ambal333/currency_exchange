@@ -47,7 +47,9 @@ class ExchangeRatesController(BaseController):
 
     def do_POST(self):
         try:
-            content_type = str(self.handler.headers.get('Content-type'))
+            content_type = str(self.handler.headers.get(
+                'Content-type')).split(';')[0].strip().lower()
+
             if content_type.strip() == 'application/x-www-form-urlencoded':
                 content_length = int(
                     self.handler.headers.get('Content-length'))
