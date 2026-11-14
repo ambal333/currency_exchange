@@ -1,4 +1,7 @@
+import os
 import sqlite3
+
+from dotenv import load_dotenv
 
 
 class DatabaseConnection:
@@ -14,7 +17,8 @@ class DatabaseConnection:
     close
         отвечает за закрытие подключения к базе данных
     """
-    db_name = 'currencies.db'
+    load_dotenv()
+    db_name = os.getenv('DB_NAME')
 
     def __init__(self):
         self.connection = sqlite3.connect(self.db_name)
