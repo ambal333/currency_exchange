@@ -31,7 +31,7 @@ class RouterPath:
         path = urlparse(request_path).path
         split_path = path.split('/')
         if len(split_path) >= 2:
-            route = split_path[-1]
+            route = split_path[1]
         else:
             route = '/'
         return routes.get(route)
