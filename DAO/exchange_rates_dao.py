@@ -1,10 +1,8 @@
 from decimal import Decimal
-from typing import Union
 
 from DAO.base_dao import BaseDao
-from Exception.integrity_exchange_error import IntegrityExchangeError
-from Exception.not_exist_exchange_rate import NotExistExchangeRate
-from Exception.currency_exchange_not_exist import CurrExchangeNotExist
+from Exception.App_error import IntegrityExchangeError
+from Exception.App_error import NotExistExchangeRate
 
 
 class ExchangeRatesDao(BaseDao):
@@ -60,7 +58,9 @@ class ExchangeRatesDao(BaseDao):
                 is_unique = self.get_unique_exchange_rate(code_1, code_2)
                 if is_unique:
                     raise IntegrityExchangeError(
-                        'Валютная пара с таким кодом уже существует')
+                        409,
+                        'Валютная пара с таким кодом уже существует'
+                    )
 
                 cur.execute('INSERT INTO ExchangeRates(basecurrencyid, '
                             'targetcurrencyid, rate) VALUES (?, ?, ?)',
@@ -71,8 +71,10 @@ class ExchangeRatesDao(BaseDao):
 
                 return unique_ex_rate
             else:
-                raise CurrExchangeNotExist(
-                    'Одна (или обе) валюта из валютной пары не существует в БД')
+                raise NotExistExchangeRate(
+                    404,
+                    'Одна (или обе) валюта из валютной пары не существует в БД'
+                )
         finally:
             cur.close()
 
@@ -92,6 +94,7 @@ class ExchangeRatesDao(BaseDao):
                 self.connection.commit()
             else:
                 raise NotExistExchangeRate(
+                    404,
                     'Валютная пара отсутствует в базе данных')
         finally:
             cur.close()
