@@ -1,7 +1,6 @@
 from decimal import Decimal, ROUND_HALF_UP
 
 from DAO.exchange_rates_dao import ExchangeRatesDao
-from Exception.currency_not_found import CurrencyNotFound
 from database.db_connection import DatabaseConnection
 from DTO.exchange_rates_dto import ExchangeRatesDTO
 
@@ -54,7 +53,7 @@ class ExchangeRatesService:
             course_from_usd = self.course_from_usd(exchange_usd_from,
                                                    exchange_usd_to, info)
             return course_from_usd
-        raise CurrencyNotFound('Валюта не найдена')
+        # raise CurrencyNotFound('Валюта не найдена')
 
     @staticmethod
     def direct_course(exchange_rate, info):

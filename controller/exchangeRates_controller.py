@@ -1,11 +1,12 @@
-from decimal import Decimal, ROUND_HALF_UP
+import sqlite3
+from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from http.client import HTTPException
 from urllib.parse import parse_qs
 
-from Exception.form_field_exception import FormFieldError
+from Exception.App_error import DatabaseError, AppError
+from Exception.App_error import FormFieldError
 from controller.base_controller import BaseController
-from DAO.exchange_rates_dao import ExchangeRatesDao
-from DTO.exchange_rates_dto import ExchangeRatesDTO
+from Service.exchange_rates_service import ExchangeRatesService
 
 
 class ExchangeRatesController(BaseController):
@@ -34,16 +35,15 @@ class ExchangeRatesController(BaseController):
 
     def __init__(self, handler, connection):
         super().__init__(handler, connection)
-        self.exchange_rates_dao = ExchangeRatesDao(connection)
+        self.service = ExchangeRatesService(connection)
 
     def do_GET(self):
         try:
-            exchange_rates = self.exchange_rates_dao.get_exchange_rates()
-            exchange_rates_dto = ExchangeRatesDTO.get_exchange_rates(
-                exchange_rates)
-            self.send_json(200, exchange_rates_dto)
-        except Exception as e:
-            self.send_error(e)
+            exchange_rates = self.service.get_exchange_rates()
+            self.send_json(200, exchange_rates)
+
+        except sqlite3.Error:
+            raise DatabaseError(500, 'Ошибка базы данных')
 
     def do_POST(self):
         try:
@@ -59,30 +59,37 @@ class ExchangeRatesController(BaseController):
                 if ('baseCurrencyCode' in param and 'targetCurrencyCode' in
                         param and 'rate' in param):
                     base_currency_code = param.get('baseCurrencyCode')[
-                        0].upper()
+                        0]
                     target_currency_code = param.get('targetCurrencyCode')[
-                        0].upper()
+                        0]
                     rate = Decimal(str(param.get('rate')[0])).quantize(
                         Decimal('0.000001'),
                         rounding=ROUND_HALF_UP)
 
                     unique_exchange_rates = (
-                        self.exchange_rates_dao.insert_exchange_rates(
-                            base_currency_code, target_currency_code, rate))
+                        self.service.post_exchange_rate(base_currency_code,
+                                                        target_currency_code,
+                                                        rate
+                                                        ))
 
-                    unique_exchange_rates_dto = (
-                        ExchangeRatesDTO.get_exchange_rate(
-                            unique_exchange_rates))
-
-                    self.send_json(201, unique_exchange_rates_dto)
+                    self.send_json(201, unique_exchange_rates)
                 else:
-                    raise FormFieldError('Отсутствует нужное поле формы')
+                    raise FormFieldError(400, 'Отсутствует нужное поле формы')
+        except InvalidOperation:
+            self.send_error(
+                400,
+                'курс должен состоять из цифр'
+            )
+        except AppError as e:
+            self.send_error(e.status_code, str(e))
 
         except Exception as e:
-            self.send_error(e)
+            self.send_error(501, str(e))
+
 
     def do_PATCH(self):
         try:
             raise HTTPException
-        except Exception as e:
-            self.send_error(e)
+
+        except Exception:
+            self.send_error(501, 'Данный путь недоступен')

@@ -1,11 +1,10 @@
 from http.client import HTTPException
 
 from DTO.currencies_dto import CurrenciesDTO
-from Exception.code_exception import CodeNotFoundError
-from Exception.currency_not_found import CurrencyNotFound
+from Exception.App_error import AppError
+from Exception.App_error import CodeNotFoundError
 from controller.base_controller import BaseController
-from DAO.currencies_dao import CurrenciesDao
-from Exception.code_standart_error import CodeStandardError
+from Service.currency_service import CurrencyService
 
 
 class CurrencyController(BaseController):
@@ -30,39 +29,31 @@ class CurrencyController(BaseController):
 
     def __init__(self, handler, connection):
         super().__init__(handler, connection)
-        self.currency_dao = CurrenciesDao(connection)
+        self.__service = CurrencyService(connection)
 
     def do_GET(self):
         try:
             path = self.handler.path.split('/')[1:]
             if len(path) == 2 and path[1] != '':
                 current_path, code = path
-                print(current_path, code)
-                if len(code) != 3:
-                    raise CodeStandardError('Код должен соответствовать '
-                                            'стандарту')
-                unique_currency = self.currency_dao.get_unique_currency(
-                    code.upper())
-                print(unique_currency)
-                if unique_currency is None:
-                    raise CurrencyNotFound('Валюта не найдена')
-                unique_currency_dto = CurrenciesDTO.get_currency(
-                    unique_currency)
-                print(unique_currency_dto)
-                return self.send_json(200, unique_currency_dto)
+
+                unique_currency = self.__service.get_unique_currency(
+                    code)
+
+                return self.send_json(200, unique_currency)
             else:
-                raise CodeNotFoundError('Код валюты отсутствует в адресе')
-        except Exception as e:
-            self.send_error(e)
+                raise CodeNotFoundError(400, 'Код валюты отсутствует в адресе')
+        except AppError as e:
+            self.send_error(e.status_code, str(e))
 
     def do_POST(self):
         try:
             raise HTTPException
-        except Exception as e:
-            self.send_error(e)
+        except Exception:
+            self.send_error(501, 'Данный путь недоступен')
 
     def do_PATCH(self):
         try:
             raise HTTPException
-        except Exception as e:
-            self.send_error(e)
+        except Exception:
+            self.send_error(501, 'Данный путь недоступен')

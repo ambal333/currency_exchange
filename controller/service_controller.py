@@ -3,8 +3,8 @@ from http.client import HTTPException
 from urllib.parse import urlparse, parse_qs
 
 from controller.base_controller import BaseController
-from service.service_exchange import ExchangeRatesService
-from Exception.form_field_exception import FormFieldError
+from Service.service_exchange import ExchangeRatesService
+from html_data.form_field_exception import FormFieldError
 from Mappers.mapper_service import MapperService
 from DTO.service_dto import ServiceDTO
 
@@ -82,11 +82,11 @@ class ServiceExchangeController(BaseController):
     def do_POST(self):
         try:
             raise HTTPException
-        except Exception as e:
-            self.send_error(e)
+        except Exception:
+            self.send_error(501, 'Данный путь недоступен')
 
     def do_PATCH(self):
         try:
             raise HTTPException
-        except Exception as e:
-            self.send_error(e)
+        except Exception:
+            self.send_error(501, 'Данный путь недоступен')
