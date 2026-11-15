@@ -62,3 +62,17 @@ class RequestHandler(BaseHTTPRequestHandler):
             'Access-Control-Allow-Headers', 'Content-Type'
         )
         super().end_headers()
+
+    def do_OPTIONS(self):
+        self.send_response(204)
+        self.send_header(
+            'Access-Control-Allow-Origin', '*'
+        )
+        self.send_header(
+            'Access-Control-Allow-Methods',
+            'GET, POST, PATCH, DELETE, OPTIONS'
+        )
+        self.send_header(
+            'Access-Control-Allow-Headers', 'Content-Type'
+        )
+        super().end_headers()
