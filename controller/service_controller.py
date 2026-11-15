@@ -4,7 +4,6 @@ from urllib.parse import urlparse, parse_qs
 
 from controller.base_controller import BaseController
 from Service.service_exchange import ExchangeRatesService
-from html_data.form_field_exception import FormFieldError
 from Mappers.mapper_service import MapperService
 from DTO.service_dto import ServiceDTO
 
@@ -73,8 +72,8 @@ class ServiceExchangeController(BaseController):
                 ))
 
                 self.send_json(200, exchange_rates_dto)
-            else:
-                raise FormFieldError('Отсутствует нужное поле формы')
+            # else:
+            #     raise FormFieldError('Отсутствует нужное поле формы')
 
         except Exception as e:
             self.send_error(e)
