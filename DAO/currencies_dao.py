@@ -25,7 +25,10 @@ class CurrenciesDao(BaseDao):
     def get_unique_currency(self, code: str) -> tuple:
         cur = self.connection.cursor()
         try:
-            cur.execute("SELECT * FROM Currencies WHERE code = ?", (code,))
+            cur.execute("SELECT id, fullname, code, sign FROM Currencies "
+                        "WHERE "
+                        "code = ?",
+                        (code,))
             return cur.fetchone()
         finally:
             cur.close()
