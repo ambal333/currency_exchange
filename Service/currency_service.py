@@ -32,9 +32,9 @@ class CurrencyService:
                 'Код должен состоять из английских букв.'
             )
         currency = self.__dao.get_unique_currency(code)
-        from_dto = CurrenciesDTO.get_currency(currency)
 
         if currency:
+            from_dto = CurrenciesDTO.get_currency(currency)
             return from_dto
         else:
             raise CurrencyNotFound(

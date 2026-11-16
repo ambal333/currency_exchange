@@ -21,8 +21,9 @@ class ExchangeRateService:
         self.__validated_cods(code_1, code_2)
 
         exchange_rate = self.__dao.get_unique_exchange_rate(code_1, code_2)
-        from_dto = ExchangeRatesDTO.get_exchange_rate(exchange_rate)
+
         if exchange_rate:
+            from_dto = ExchangeRatesDTO.get_exchange_rate(exchange_rate)
             return from_dto
         else:
             raise ExchangeRateNotFound(
