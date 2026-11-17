@@ -86,7 +86,6 @@ class ExchangeRatesController(BaseController):
         except Exception as e:
             self.send_error(501, str(e))
 
-
     def do_PATCH(self):
         try:
             raise HTTPException

@@ -3,7 +3,7 @@ from urllib.parse import unquote
 
 from DAO.exchange_rates_dao import ExchangeRatesDao
 from Exception.App_error import CodeStandardError, ExchangeRateNotFound, \
-    RateValidError
+    RateValidError, IntegrityError, NotExistExchangeRate
 from DTO.exchange_rates_dto import ExchangeRatesDTO
 
 
@@ -17,7 +17,11 @@ class ExchangeRateService:
         decod_cods = unquote(two_code)
         code_1 = decod_cods[:3]
         code_2 = decod_cods[3:]
-        print(code_1, code_2)
+        if code_1 == code_2:
+            raise IntegrityError(
+                400,
+                'Валюты не должны совпадать.'
+            )
         self.__validated_cods(code_1, code_2)
 
         exchange_rate = self.__dao.get_unique_exchange_rate(code_1, code_2)
@@ -36,13 +40,18 @@ class ExchangeRateService:
         code_1 = decod_cods[:3]
         code_2 = decod_cods[3:]
 
-        self.__validated_cods(code_1, code_2)
+        if code_1 == code_2:
+            raise IntegrityError(
+                400,
+                'Валюты не должны совпадать.'
+            )
 
         if rate <= 0:
             raise RateValidError(
                 400,
                 'курс не может быть меньше или равен 0'
             )
+        self.__validated_cods(code_1, code_2)
 
         self.__dao.patch_exchange_rates(
             code_1,
@@ -51,7 +60,13 @@ class ExchangeRateService:
         )
         update_exchange_rate = self.__dao.get_unique_exchange_rate(code_1,
                                                                    code_2)
-        from_dto = ExchangeRatesDTO.get_exchange_rate(update_exchange_rate)
+        if update_exchange_rate:
+            from_dto = ExchangeRatesDTO.get_exchange_rate(update_exchange_rate)
+        else:
+            raise NotExistExchangeRate(
+                404,
+                'Валютная пара отсутствует в базе данных'
+            )
         return from_dto
 
     def __validated_cods(self, code_1, code_2):

@@ -2,7 +2,8 @@ from decimal import Decimal
 from urllib.parse import unquote
 
 from DAO.exchange_rates_dao import ExchangeRatesDao
-from Exception.App_error import CodeStandardError, RateValidError
+from Exception.App_error import CodeStandardError, RateValidError, \
+    IntegrityError
 from DTO.exchange_rates_dto import ExchangeRatesDTO
 
 
@@ -19,14 +20,17 @@ class ExchangeRatesService:
 
     def post_exchange_rate(self, base_currency_code: str,
                            target_currency_code: str, rate: Decimal) -> dict:
-
-        self.__validated_cods(base_currency_code, target_currency_code)
-
         if rate <= 0:
             raise RateValidError(
                 400,
                 'курс не может быть меньше или равен 0'
             )
+        if base_currency_code == target_currency_code:
+            raise IntegrityError(
+                400,
+                'Валюты не должны совпадать.'
+            )
+        self.__validated_cods(base_currency_code, target_currency_code)
 
         exchange_rate = self.__dao.insert_exchange_rates(base_currency_code,
                                                          target_currency_code,

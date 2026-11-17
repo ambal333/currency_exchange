@@ -58,3 +58,11 @@ class RateValidError(AppError):
 
 class IntegrityExchangeError(AppError):
     pass
+
+
+class FormatFormError(AppError):
+    pass
+
+
+class CourseNotExist(AppError):
+    pass

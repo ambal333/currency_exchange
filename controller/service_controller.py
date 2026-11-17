@@ -1,11 +1,10 @@
-from decimal import Decimal, ROUND_HALF_UP
 from http.client import HTTPException
 from urllib.parse import urlparse, parse_qs
 
+from Exception.App_error import AppError, FormFieldError
 from controller.base_controller import BaseController
 from Service.service_exchange import ExchangeRatesService
 from Mappers.mapper_service import MapperService
-from DTO.service_dto import ServiceDTO
 
 
 class ServiceExchangeController(BaseController):
@@ -50,33 +49,29 @@ class ServiceExchangeController(BaseController):
 
             if None not in dict_param.values():
                 dict_param = {
-                    'code_from': dict_param['code_from'][0].upper(),
-                    'code_to': dict_param['code_to'][0].upper(),
+                    'code_from': dict_param['code_from'][0],
+                    'code_to': dict_param['code_to'][0],
                     'amount': dict_param['amount'][0]
                 }
+
                 converted_amount, rate = ExchangeRatesService(
                     self.connection).calculate_course(dict_param)
 
-                # конвертируем средства из одной валюту в другую
-                base_currency, target_currency = self.mapper.to_dto(
+                convert_course = self.mapper.to_dto(
                     dict_param['code_from'],
-                    dict_param['code_to'])
+                    dict_param['code_to'],
+                    rate,
+                    dict_param['amount'],
+                    converted_amount
+                )
 
-                exchange_rates_dto = ServiceDTO.get_exchange_rate((
-                    base_currency, target_currency,
-                    float(rate),
-                    float(Decimal(dict_param['amount']).quantize(Decimal(
-                        '0.01'),
-                                                   rounding=ROUND_HALF_UP)),
-                    float(converted_amount)
-                ))
+                self.send_json(200, convert_course)
 
-                self.send_json(200, exchange_rates_dto)
-            # else:
-            #     raise FormFieldError('Отсутствует нужное поле формы')
+            else:
+                raise FormFieldError(404, 'Отсутствует нужное поле формы')
 
-        except Exception as e:
-            self.send_error(e)
+        except AppError as e:
+            self.send_error(e.status_code, str(e))
 
     def do_POST(self):
         try:

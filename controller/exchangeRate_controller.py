@@ -2,7 +2,8 @@ from decimal import Decimal, ROUND_HALF_UP, InvalidOperation
 from http.client import HTTPException
 from urllib.parse import parse_qs
 
-from Exception.App_error import ExchangeRateCodeNotFound, AppError
+from Exception.App_error import ExchangeRateCodeNotFound, AppError, \
+    FormatFormError
 from Exception.App_error import FormFieldError
 from Exception.App_error import NotExistExchangeRate
 from controller.base_controller import BaseController
@@ -42,10 +43,10 @@ class ExchangeRateController(BaseController):
         try:
             path = self.handler.path.split('/')[1:]
             if len(path) == 2 and path[1] != '':
-                current_path, code = path
+                current_path, codes = path
 
                 unique_exchange_rate = (
-                    self.__service.get_unique_exchange_rate(code)
+                    self.__service.get_unique_exchange_rate(codes)
                 )
 
                 return self.send_json(200, unique_exchange_rate)
@@ -76,8 +77,8 @@ class ExchangeRateController(BaseController):
                 patch_data = self.handler.rfile.read(
                     content_length).decode('utf-8')
                 dict_param = parse_qs(patch_data)
-
-                if 'rate' in dict_param:
+                print(dict_param)
+                if 'rate' in dict_param and dict_param.get('rate') != '':
                     rate = Decimal(str(dict_param.get('rate')[0])).quantize(
                         Decimal('0.000001'),
                         rounding=ROUND_HALF_UP)
@@ -89,14 +90,14 @@ class ExchangeRateController(BaseController):
 
                     self.send_json(200, update_exchange_rates)
                 else:
-                    raise NotExistExchangeRate(
-                        404,
-                        'Валютная пара отсутствует в базе данных'
+                    raise FormFieldError(
+                        400,
+                        'Отсутствует нужное поле формы'
                     )
             else:
-                raise FormFieldError(
-                    400,
-                    'Отсутствует нужное поле формы'
+                raise FormatFormError(
+                    415,
+                    'Неверный формат полей.'
                 )
         except InvalidOperation:
             self.send_error(

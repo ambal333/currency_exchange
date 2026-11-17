@@ -37,3 +37,5 @@ class RouterPath:
         return routes.get(route)
 
 
+router = RouterPath()
+print(router.search_path('http://176.53.255.24:8080/currencies'))
