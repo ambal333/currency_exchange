@@ -66,3 +66,7 @@ class FormatFormError(AppError):
 
 class CourseNotExist(AppError):
     pass
+
+
+class AmountLessZero(AppError):
+    pass

@@ -3,7 +3,7 @@ from urllib.parse import unquote
 
 from DAO.exchange_rates_dao import ExchangeRatesDao
 from Exception.App_error import CodeStandardError, CourseNotExist, \
-    IntegrityError, CodeNotFoundError
+    IntegrityError, CodeNotFoundError, AmountLessZero
 from database.db_connection import DatabaseConnection
 from DTO.exchange_rates_dto import ExchangeRatesDTO
 
@@ -34,11 +34,14 @@ class ExchangeRatesService:
     def calculate_course(self, info: dict):
         code_from = info.get('code_from')
         code_to = info.get('code_to')
-        if not code_to or not code_from:
-            raise CodeNotFoundError(400, 'Введите все валюты')
-        exchange_rate = self.__dao.get_unique_exchange_rate(code_from, code_to)
+
+        if float(info['amount']) < 0:
+            raise AmountLessZero(400,
+                                 'amount не может быть отрицательным')
 
         self.__validated_cods(code_from, code_to)
+
+        exchange_rate = self.__dao.get_unique_exchange_rate(code_from, code_to)
 
         if exchange_rate:
             direct_course = self.direct_course(exchange_rate, info)
