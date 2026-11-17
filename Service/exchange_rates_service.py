@@ -20,17 +20,13 @@ class ExchangeRatesService:
 
     def post_exchange_rate(self, base_currency_code: str,
                            target_currency_code: str, rate: Decimal) -> dict:
+
+        self.__validated_cods(base_currency_code, target_currency_code)
         if rate <= 0:
             raise RateValidError(
                 400,
                 'курс не может быть меньше или равен 0'
             )
-        if base_currency_code == target_currency_code:
-            raise IntegrityError(
-                400,
-                'Валюты не должны совпадать.'
-            )
-        self.__validated_cods(base_currency_code, target_currency_code)
 
         exchange_rate = self.__dao.insert_exchange_rates(base_currency_code,
                                                          target_currency_code,
@@ -42,6 +38,13 @@ class ExchangeRatesService:
     def __validated_cods(self, code_1, code_2):
         decode_code_1 = unquote(code_1)
         decode_code_2 = unquote(code_2)
+
+        if decode_code_1 == decode_code_2:
+            raise IntegrityError(
+                400,
+                'Валюты не должны совпадать.'
+            )
+
         if (len(decode_code_1) != self.__LENGTH_CODE or len(decode_code_2) !=
                 self.__LENGTH_CODE):
             raise CodeStandardError(
@@ -49,7 +52,8 @@ class ExchangeRatesService:
                 'Оба кода должны состоять из 3 символов.'
             )
 
-        if decode_code_1 != decode_code_1.upper() or decode_code_2 != decode_code_2.upper():
+        if (decode_code_1 != decode_code_1.upper() or
+                decode_code_2 != decode_code_2.upper()):
             raise CodeStandardError(
                 400,
                 'Коды должны быть в верхнем регистре.'

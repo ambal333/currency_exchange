@@ -17,11 +17,7 @@ class ExchangeRateService:
         decod_cods = unquote(two_code)
         code_1 = decod_cods[:3]
         code_2 = decod_cods[3:]
-        if code_1 == code_2:
-            raise IntegrityError(
-                400,
-                'Валюты не должны совпадать.'
-            )
+
         self.__validated_cods(code_1, code_2)
 
         exchange_rate = self.__dao.get_unique_exchange_rate(code_1, code_2)
@@ -40,18 +36,13 @@ class ExchangeRateService:
         code_1 = decod_cods[:3]
         code_2 = decod_cods[3:]
 
-        if code_1 == code_2:
-            raise IntegrityError(
-                400,
-                'Валюты не должны совпадать.'
-            )
+        self.__validated_cods(code_1, code_2)
 
         if rate <= 0:
             raise RateValidError(
                 400,
                 'курс не может быть меньше или равен 0'
             )
-        self.__validated_cods(code_1, code_2)
 
         self.__dao.patch_exchange_rates(
             code_1,
@@ -70,6 +61,12 @@ class ExchangeRateService:
         return from_dto
 
     def __validated_cods(self, code_1, code_2):
+        if code_1 == code_2:
+            raise IntegrityError(
+                400,
+                'Валюты не должны совпадать.'
+            )
+
         if (len(code_1) != self.__LENGTH_CODE or len(code_2) !=
                 self.__LENGTH_CODE):
             raise CodeStandardError(

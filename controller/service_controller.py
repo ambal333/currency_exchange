@@ -1,3 +1,4 @@
+from decimal import InvalidOperation
 from http.client import HTTPException
 from urllib.parse import urlparse, parse_qs
 
@@ -43,10 +44,9 @@ class ServiceExchangeController(BaseController):
                       }
         try:
             path_parse = parse_qs(urlparse(self.handler.path).query)
-            dict_param['code_from'] = path_parse.get('from', None)
-            dict_param['code_to'] = path_parse.get('to', None)
-            dict_param['amount'] = path_parse.get('amount', None)
-
+            dict_param['code_from'] = path_parse.get('from')
+            dict_param['code_to'] = path_parse.get('to')
+            dict_param['amount'] = path_parse.get('amount')
             if None not in dict_param.values():
                 dict_param = {
                     'code_from': dict_param['code_from'][0],
@@ -68,7 +68,13 @@ class ServiceExchangeController(BaseController):
                 self.send_json(200, convert_course)
 
             else:
-                raise FormFieldError(404, 'Отсутствует нужное поле формы')
+                raise FormFieldError(400, 'Отсутствует нужное поле формы')
+
+        except InvalidOperation:
+            self.send_error(
+                400,
+                'amount должен состоять из цифр'
+            )
 
         except AppError as e:
             self.send_error(e.status_code, str(e))

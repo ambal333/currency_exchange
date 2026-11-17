@@ -2,7 +2,8 @@ from decimal import Decimal, ROUND_HALF_UP
 from urllib.parse import unquote
 
 from DAO.exchange_rates_dao import ExchangeRatesDao
-from Exception.App_error import CodeStandardError, CourseNotExist
+from Exception.App_error import CodeStandardError, CourseNotExist, \
+    IntegrityError, CodeNotFoundError
 from database.db_connection import DatabaseConnection
 from DTO.exchange_rates_dto import ExchangeRatesDTO
 
@@ -33,7 +34,8 @@ class ExchangeRatesService:
     def calculate_course(self, info: dict):
         code_from = info.get('code_from')
         code_to = info.get('code_to')
-
+        if not code_to or not code_from:
+            raise CodeNotFoundError(400, 'Введите все валюты')
         exchange_rate = self.__dao.get_unique_exchange_rate(code_from, code_to)
 
         self.__validated_cods(code_from, code_to)
@@ -42,8 +44,9 @@ class ExchangeRatesService:
             direct_course = self.direct_course(exchange_rate, info)
             return direct_course
 
-        exchange_rate_reverse = self.__dao.get_unique_exchange_rate(code_from,
-                                                                    code_to)
+        exchange_rate_reverse = self.__dao.get_unique_exchange_rate(code_to,
+                                                                    code_from)
+
         if exchange_rate_reverse:
             reverse_course = self.reverse_course(exchange_rate_reverse, info)
             return reverse_course
@@ -105,6 +108,12 @@ class ExchangeRatesService:
     def __validated_cods(self, code_1, code_2):
         decode_code_1 = unquote(code_1)
         decode_code_2 = unquote(code_2)
+
+        if decode_code_1 == decode_code_2:
+            raise IntegrityError(
+                400,
+                'Валюты не должны совпадать.'
+            )
         if (len(decode_code_1) != self.__LENGTH_CODE or len(decode_code_2) !=
                 self.__LENGTH_CODE):
             raise CodeStandardError(
