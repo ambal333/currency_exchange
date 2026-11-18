@@ -45,7 +45,7 @@ class BaseDao:
                 cur.execute(
                     "INSERT INTO Currencies(code, fullname, sign) "
                     "VALUES (?,?,?)",
-                    ('EUR', 'Euro', '€'))
+                    ('AUD', 'Australian dollar', 'A€'))
                 cur.execute(
                     "INSERT INTO Currencies(code, fullname, sign) "
                     "VALUES (?,?,?)",
@@ -55,6 +55,28 @@ class BaseDao:
                     "VALUES (?,?,?)",
                     ('RUB', 'Russian rubles', '₽'))
                 self.connection.commit()
+            cur.execute('SELECT COUNT(id) FROM ExchangeRates')
+            if cur.fetchone()[0] == 0:
+                cur.execute("INSERT INTO ExchangeRates(basecurrencyid, "
+                            "targetcurrencyid, rate)"
+                            " VALUES ("
+                            "(SELECT id FROM Currencies WHERE code = ?),"
+                            "(SELECT id FROM Currencies WHERE code = ?),"
+                            " ?)",
+                            ('USD',
+                             'AUD',
+                             1.49)
+                            )
+                cur.execute("INSERT INTO ExchangeRates(basecurrencyid, "
+                            "targetcurrencyid, rate)"
+                            " VALUES ("
+                            "(SELECT id FROM Currencies WHERE code = ?),"
+                            "(SELECT id FROM Currencies WHERE code = ?),"
+                            " ?)",
+                            ('USD',
+                             'RUB',
+                             80)
+                            )
         finally:
             cur.close()
 
