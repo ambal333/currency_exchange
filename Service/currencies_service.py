@@ -3,7 +3,7 @@ import sqlite3
 from DAO.currencies_dao import CurrenciesDao
 from DTO.currencies_dto import CurrenciesDTO
 from Exception.App_error import IntegrityError
-from database.db_connection import DatabaseConnection
+from Database.db_connection import DatabaseConnection
 from Service.Validated_codes import CheckCodes
 
 

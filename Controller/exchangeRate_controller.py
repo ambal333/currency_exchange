@@ -5,7 +5,7 @@ from urllib.parse import parse_qs
 from Exception.App_error import ExchangeRateCodeNotFound, AppError, \
     FormatFormError
 from Exception.App_error import FormFieldError
-from controller.base_controller import BaseController
+from Controller.base_controller import BaseController
 from Service.exchange_rate_service import ExchangeRateService
 
 
@@ -15,7 +15,7 @@ class ExchangeRateController(BaseController):
 
     Атрибуты
     --------
-    handler
+    Handler
         контроллер для обработки пути
     connection
         обеспечивает связь с бд

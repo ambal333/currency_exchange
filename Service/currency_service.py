@@ -1,6 +1,6 @@
 from DAO.currencies_dao import CurrenciesDao
 from Exception.App_error import CurrencyNotFound
-from database.db_connection import DatabaseConnection
+from Database.db_connection import DatabaseConnection
 from DTO.currencies_dto import CurrenciesDTO
 from Service.Validated_codes import CheckCodes
 

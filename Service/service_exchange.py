@@ -3,7 +3,7 @@ from decimal import Decimal, ROUND_HALF_UP
 from DAO.exchange_rates_dao import ExchangeRatesDao
 from Exception.App_error import (CourseNotExist,
                                  AmountError)
-from database.db_connection import DatabaseConnection
+from Database.db_connection import DatabaseConnection
 from DTO.exchange_rates_dto import ExchangeRatesDTO
 from Service.Validated_codes import CheckCodes
 

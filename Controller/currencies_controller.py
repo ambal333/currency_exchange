@@ -5,7 +5,7 @@ from urllib.parse import parse_qs
 from Exception.App_error import (FormFieldError,
                                  DatabaseError,
                                  AppError)
-from controller.base_controller import BaseController
+from Controller.base_controller import BaseController
 from Service.currencies_service import CurrenciesService
 
 
@@ -14,7 +14,7 @@ class CurrenciesController(BaseController):
 
     Атрибуты
     --------
-    handler
+    Handler
         контроллер для обработки пути
     __service
         экземпляр класса CurrenciesService

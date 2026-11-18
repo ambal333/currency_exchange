@@ -2,7 +2,7 @@ import json
 
 from abc import ABC, abstractmethod
 from http.server import BaseHTTPRequestHandler
-from database.db_connection import DatabaseConnection
+from Database.db_connection import DatabaseConnection
 
 
 class BaseController(ABC):
@@ -10,7 +10,7 @@ class BaseController(ABC):
 
     Атрибуты
     --------
-    handler: BaseHTTPRequestHandler
+    Handler: BaseHTTPRequestHandler
         Контроллер для обработки пути
     connection: DatabaseConnection
         Обеспечивает связь с бд

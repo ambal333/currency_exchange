@@ -2,7 +2,7 @@ from http.client import HTTPException
 
 from Exception.App_error import AppError
 from Exception.App_error import CodeNotFoundError
-from controller.base_controller import BaseController
+from Controller.base_controller import BaseController
 from Service.currency_service import CurrencyService
 
 
@@ -11,7 +11,7 @@ class CurrencyController(BaseController):
 
     Атрибуты
     --------
-    handler
+    Handler
         контроллер для обработки пути
     connection
         обеспечивает связь с бд

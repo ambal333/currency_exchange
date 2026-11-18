@@ -1,10 +1,10 @@
 from urllib.parse import urlparse
 
-from controller.currencies_controller import CurrenciesController
-from controller.currency_controller import CurrencyController
-from controller.exchangeRates_controller import ExchangeRatesController
-from controller.exchangeRate_controller import ExchangeRateController
-from controller.exchange_controller import ServiceExchangeController
+from Controller.currencies_controller import CurrenciesController
+from Controller.currency_controller import CurrencyController
+from Controller.exchangeRates_controller import ExchangeRatesController
+from Controller.exchangeRate_controller import ExchangeRateController
+from Controller.exchange_controller import ServiceExchangeController
 
 routes = {
     'currencies': CurrenciesController,

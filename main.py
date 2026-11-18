@@ -3,8 +3,8 @@ from http.server import HTTPServer
 
 from dotenv import load_dotenv
 
-from database.db_connection import DatabaseConnection
-from handler.handler import RequestHandler
+from Database.db_connection import DatabaseConnection
+from Handler.handler import RequestHandler
 
 
 def main():

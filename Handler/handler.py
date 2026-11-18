@@ -1,7 +1,7 @@
 from http.server import BaseHTTPRequestHandler
 
 from Router.router import RouterPath
-from controller.base_controller import BaseController
+from Controller.base_controller import BaseController
 
 
 class RequestHandler(BaseHTTPRequestHandler):
