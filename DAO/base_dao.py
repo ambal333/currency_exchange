@@ -12,7 +12,7 @@ class BaseDao:
     Методы
     ------
     __create_tables
-        создает таблицы в бд и добавляет несколько валют
+        создает таблицы в бд и добавляет несколько валют и обменных курсов
     get_currency_id_by_code
         осуществляет получение ID валюты по конкретному коду
     """
@@ -41,6 +41,7 @@ class BaseDao:
             self.connection.commit()
 
             cur.execute('SELECT COUNT(id) FROM Currencies')
+
             if cur.fetchone()[0] == 0:
                 cur.execute(
                     "INSERT INTO Currencies(code, fullname, sign) "
@@ -55,7 +56,9 @@ class BaseDao:
                     "VALUES (?,?,?)",
                     ('RUB', 'Russian rubles', '₽'))
                 self.connection.commit()
+
             cur.execute('SELECT COUNT(id) FROM ExchangeRates')
+
             if cur.fetchone()[0] == 0:
                 cur.execute("INSERT INTO ExchangeRates(basecurrencyid, "
                             "targetcurrencyid, rate)"

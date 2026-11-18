@@ -19,8 +19,9 @@ class ExchangeRateController(BaseController):
         контроллер для обработки пути
     connection
         обеспечивает связь с бд
-    dao
-        экземпляр класса для получения и обновления обменных курсов в бд
+    __service
+        экземпляр класса ExchangeRateService для валидации и формирования
+        ответа
 
     Методы
     ------
@@ -33,7 +34,6 @@ class ExchangeRateController(BaseController):
     """
 
     def __init__(self, handler, connection):
-        self.handler = handler
         super().__init__(handler, connection)
         self.__service = ExchangeRateService(connection)
 

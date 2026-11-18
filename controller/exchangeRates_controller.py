@@ -15,13 +15,13 @@ class ExchangeRatesController(BaseController):
 
     Атрибуты
     --------
-    exchange_rates_dao
-        экземпляр класса для получения обменных курсов из бд и добавления
-        нового обменного курса в бд
     handler
         контроллер для обработки пути
     connection
         обеспечивает связь с бд
+    __service
+        экземпляр класса ExchangeRatesService для валидации и формирования
+        ответа
 
     Методы
     ------

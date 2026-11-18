@@ -15,6 +15,8 @@ class CurrencyController(BaseController):
         контроллер для обработки пути
     connection
         обеспечивает связь с бд
+    __service
+        экземпляр класса CurrencyService для валидации и формирования ответа
 
     Методы
     ------

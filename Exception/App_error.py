@@ -1,5 +1,15 @@
 class AppError(Exception):
-    def __init__(self, status_code, message):
+    """Базовый класс для обработки собственных исключений
+
+    Атрибуты
+    --------
+    message
+        сообщение об ошибке
+    status_code
+        статус код ошибки
+    """
+
+    def __init__(self, status_code: int, message: str):
         self.message = message
         self.status_code = status_code
         super().__init__(message)

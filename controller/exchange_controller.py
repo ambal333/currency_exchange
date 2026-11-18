@@ -2,7 +2,8 @@ from decimal import InvalidOperation
 from http.client import HTTPException
 from urllib.parse import urlparse, parse_qs
 
-from Exception.App_error import AppError, FormFieldError
+from Exception.App_error import (AppError,
+                                 FormFieldError)
 from controller.base_controller import BaseController
 from Service.service_exchange import ExchangeService
 from Mappers.mapper_service import MapperService
@@ -14,13 +15,14 @@ class ServiceExchangeController(BaseController):
 
     Атрибуты
     --------
-    handler
+    __handler
         контроллер для обработки пути
     connection
         обеспечивает связь с бд
-    mapper
+    __mapper
         экземпляр класса для получения сформированного словаря с данными
-
+    __service
+        экземпляр класса ExchangeService для валидации и формирования ответа
     Методы
     ------
     do_GET
@@ -33,8 +35,8 @@ class ServiceExchangeController(BaseController):
     """
 
     def __init__(self, handler, connection):
-        self.handler = handler
-        self.mapper = MapperService(connection)
+        self.__mapper = MapperService(connection)
+        self.__service = ExchangeService(connection)
         super().__init__(handler, connection)
 
     def do_GET(self):
@@ -54,10 +56,10 @@ class ServiceExchangeController(BaseController):
                     'amount': dict_param['amount'][0]
                 }
 
-                converted_amount, rate = ExchangeService(
-                    self.connection).calculate_course(dict_param)
-
-                convert_course = self.mapper.to_dto(
+                converted_amount, rate = self.__service.calculate_course(
+                    dict_param
+                )
+                convert_course = self.__mapper.to_dto(
                     dict_param['code_from'],
                     dict_param['code_to'],
                     rate,

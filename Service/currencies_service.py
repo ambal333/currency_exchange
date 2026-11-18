@@ -8,6 +8,22 @@ from Service.Validated_codes import CheckCodes
 
 
 class CurrenciesService:
+    """Класс используется для валидации, сериализации всех валют
+
+    Атрибуты
+    --------
+    __dao
+        экземпляр класса CurrenciesDao, используется для получения и записи
+        данных в бд
+
+    Методы
+    ------
+    get_all_currencies
+        валидация и получение всех валют
+    post_currency
+        валидация и добавление новой валюты в базу
+    """
+
     def __init__(self, connection: DatabaseConnection):
         self.__dao = CurrenciesDao(connection)
 

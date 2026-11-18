@@ -7,8 +7,21 @@ from Service.Validated_codes import CheckCodes
 
 
 class ExchangeRatesService:
-    __LENGTH_CODE = 3
+    """Класс используется для валидации и сериализации всех обменных курсов
 
+    Атрибуты
+    --------
+    __dao
+        экземпляр класса ExchangeRatesDao, используется для получения и записи
+        данных в бд
+
+    Методы
+    ------
+    get_exchange_rates
+        валидация и получение всех обменных курсов
+    post_exchange_rate
+        валидация и добавление одного обменного курса в бд
+    """
     def __init__(self, connection):
         self.__dao = ExchangeRatesDao(connection)
 
@@ -21,6 +34,7 @@ class ExchangeRatesService:
                            target_currency_code: str, rate: Decimal) -> dict:
 
         CheckCodes.validated_cods(base_currency_code, target_currency_code)
+
         if rate <= 0:
             raise RateValidError(
                 400,

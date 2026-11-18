@@ -10,6 +10,22 @@ from Service.Validated_codes import CheckCodes
 
 
 class ExchangeRateService:
+    """Класс используется для валидации, сериализации обменных курсов
+
+    Атрибуты
+    --------
+    __dao
+        экземпляр класса ExchangeRatesDao, используется для получения и записи
+        данных в бд
+
+    Методы
+    ------
+    get_unique_exchange_rate
+        валидация и получения одного обменного курса
+    patch_exchange_rate
+        валидация и обновление rate в обменном курсе
+    """
+
     def __init__(self, connection):
         self.__dao = ExchangeRatesDao(connection)
 

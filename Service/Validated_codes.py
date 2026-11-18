@@ -6,10 +6,20 @@ from Exception.App_error import (IntegrityError,
 
 
 class CheckCodes:
+    """Класс служит для проверки полей code и name
+
+    Методы
+    ______
+    validated_cods
+        валидация двух кодов для обменных курсов
+    validated_code_name
+        валидация code, name для валют
+    """
+
     __LENGTH_CODE = 3
 
     @classmethod
-    def validated_cods(cls, code_1, code_2):
+    def validated_cods(cls, code_1: str, code_2: str) -> None:
         decode_code_1 = unquote(code_1)
         decode_code_2 = unquote(code_2)
 
@@ -41,7 +51,7 @@ class CheckCodes:
             )
 
     @classmethod
-    def validated_code_name(cls, code, name=None):
+    def validated_code_name(cls, code: str, name=None) -> None:
         decode_code = unquote(code)
         if len(decode_code) != cls.__LENGTH_CODE:
             raise CodeStandardError(

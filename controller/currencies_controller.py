@@ -2,8 +2,9 @@ import sqlite3
 from http.client import HTTPException
 from urllib.parse import parse_qs
 
-from Exception.App_error import FormFieldError, DatabaseError, \
-    AppError
+from Exception.App_error import (FormFieldError,
+                                 DatabaseError,
+                                 AppError)
 from controller.base_controller import BaseController
 from Service.currencies_service import CurrenciesService
 
@@ -15,8 +16,8 @@ class CurrenciesController(BaseController):
     --------
     handler
         контроллер для обработки пути
-    currencies_dao
-        экземпляр класса для работы с базой данных
+    __service
+        экземпляр класса CurrenciesService
     connection
         обеспечивает связь с бд
 
