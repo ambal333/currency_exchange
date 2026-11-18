@@ -76,6 +76,12 @@ class ServiceExchangeController(BaseController):
                 'amount должен состоять из цифр'
             )
 
+        except ValueError:
+            self.send_error(
+                400,
+                'amount должен состоять из цифр'
+            )
+
         except AppError as e:
             self.send_error(e.status_code, str(e))
 

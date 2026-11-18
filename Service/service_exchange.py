@@ -35,7 +35,7 @@ class ExchangeService:
         code_from = info.get('code_from')
         code_to = info.get('code_to')
 
-        if ' ' in info['amount'] or not info['amount'].isdigit():
+        if ' ' in info['amount']:
             raise AmountError(
                 400,
                 'параметр amount должен состоять из цифр.'
