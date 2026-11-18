@@ -1,17 +1,13 @@
 import sqlite3
-from urllib.parse import unquote
 
 from DAO.currencies_dao import CurrenciesDao
 from DTO.currencies_dto import CurrenciesDTO
-from Exception.App_error import (CodeStandardError,
-                                 NameStandardError,
-                                 IntegrityError)
+from Exception.App_error import IntegrityError
 from database.db_connection import DatabaseConnection
+from Service.Validated_codes import CheckCodes
 
 
 class CurrenciesService:
-    __LENGTH_CODE = 3
-
     def __init__(self, connection: DatabaseConnection):
         self.__dao = CurrenciesDao(connection)
 
@@ -22,29 +18,7 @@ class CurrenciesService:
 
     def post_currency(self, code: str, name: str, sign: str) -> dict:
         try:
-            if len(code) != self.__LENGTH_CODE:
-                raise CodeStandardError(
-                    400,
-                    'Код должен состоять из 3 символов.'
-                )
-            if code != code.upper():
-                raise CodeStandardError(
-                    400,
-                    'Код должен быть в верхнем регистре.'
-                )
-            decode_code = unquote(code)
-            if not (code.isalpha() and decode_code.isascii()):
-                raise CodeStandardError(
-                    400,
-                    'Код должен состоять из английских букв.'
-                )
-            decode_name = unquote(name)
-            if not (decode_name.isascii()):
-                raise NameStandardError(
-                    400,
-                    'Название валюты должно состоять из '
-                    'английских символов.'
-                )
+            CheckCodes.validated_code_name(code, name)
 
             added_currency = self.__dao.insert_currency(code, name, sign)
             from_dto = CurrenciesDTO.get_currency(added_currency)

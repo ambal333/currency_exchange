@@ -2,14 +2,14 @@ from decimal import Decimal
 from urllib.parse import unquote
 
 from DAO.exchange_rates_dao import ExchangeRatesDao
-from Exception.App_error import CodeStandardError, ExchangeRateNotFound, \
-    RateValidError, IntegrityError, NotExistExchangeRate
+from Exception.App_error import (ExchangeRateNotFound,
+                                 RateValidError,
+                                 NotExistExchangeRate)
 from DTO.exchange_rates_dto import ExchangeRatesDTO
+from Service.Validated_codes import CheckCodes
 
 
 class ExchangeRateService:
-    __LENGTH_CODE = 3
-
     def __init__(self, connection):
         self.__dao = ExchangeRatesDao(connection)
 
@@ -18,7 +18,7 @@ class ExchangeRateService:
         code_1 = decod_cods[:3]
         code_2 = decod_cods[3:]
 
-        self.__validated_cods(code_1, code_2)
+        CheckCodes.validated_cods(code_1, code_2)
 
         exchange_rate = self.__dao.get_unique_exchange_rate(code_1, code_2)
 
@@ -36,7 +36,7 @@ class ExchangeRateService:
         code_1 = decod_cods[:3]
         code_2 = decod_cods[3:]
 
-        self.__validated_cods(code_1, code_2)
+        CheckCodes.validated_cods(code_1, code_2)
 
         if rate <= 0:
             raise RateValidError(
@@ -59,30 +59,3 @@ class ExchangeRateService:
                 'Валютная пара отсутствует в базе данных'
             )
         return from_dto
-
-    def __validated_cods(self, code_1, code_2):
-        if code_1 == code_2:
-            raise IntegrityError(
-                400,
-                'Валюты не должны совпадать.'
-            )
-
-        if (len(code_1) != self.__LENGTH_CODE or len(code_2) !=
-                self.__LENGTH_CODE):
-            raise CodeStandardError(
-                400,
-                'Оба кода должны состоять из 3 символов.'
-            )
-
-        if code_1 != code_1.upper() or code_2 != code_2.upper():
-            raise CodeStandardError(
-                400,
-                'Коды должны быть в верхнем регистре.'
-            )
-
-        if not ((code_1.isalpha() and code_1.isascii()) and
-                code_2.isalpha() and code_2.isascii()):
-            raise CodeStandardError(
-                400,
-                'Коды должны состоять из английских букв.'
-            )

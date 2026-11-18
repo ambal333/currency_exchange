@@ -1,11 +1,11 @@
 from decimal import Decimal, ROUND_HALF_UP
-from urllib.parse import unquote
 
 from DAO.exchange_rates_dao import ExchangeRatesDao
-from Exception.App_error import CodeStandardError, CourseNotExist, \
-    IntegrityError, AmountError
+from Exception.App_error import (CourseNotExist,
+                                 AmountError)
 from database.db_connection import DatabaseConnection
 from DTO.exchange_rates_dto import ExchangeRatesDTO
+from Service.Validated_codes import CheckCodes
 
 
 class ExchangeService:
@@ -45,7 +45,7 @@ class ExchangeService:
             raise AmountError(400,
                               'amount не может быть отрицательным')
 
-        self.__validated_cods(code_from, code_to)
+        CheckCodes.validated_cods(code_from, code_to)
 
         exchange_rate = self.__dao.get_unique_exchange_rate(code_from, code_to)
 
@@ -114,32 +114,3 @@ class ExchangeService:
                 rate_from_to.quantize(Decimal('0.000001'),
                                       rounding=ROUND_HALF_UP))
 
-    def __validated_cods(self, code_1, code_2):
-        decode_code_1 = unquote(code_1)
-        decode_code_2 = unquote(code_2)
-
-        if decode_code_1 == decode_code_2:
-            raise IntegrityError(
-                400,
-                'Валюты не должны совпадать.'
-            )
-        if (len(decode_code_1) != self.__LENGTH_CODE or len(decode_code_2) !=
-                self.__LENGTH_CODE):
-            raise CodeStandardError(
-                400,
-                'Оба кода должны состоять из 3 символов.'
-            )
-
-        if (decode_code_1 != decode_code_1.upper() or
-                decode_code_2 != decode_code_2.upper()):
-            raise CodeStandardError(
-                400,
-                'Коды должны быть в верхнем регистре.'
-            )
-
-        if not ((decode_code_1.isalpha() and decode_code_1.isascii()) and (
-                decode_code_2.isalpha() and decode_code_2.isascii())):
-            raise CodeStandardError(
-                400,
-                'Коды должны состоять из английских букв.'
-            )
