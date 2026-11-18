@@ -61,4 +61,4 @@ class BaseController(ABC):
             self.send_json(status_code, message)
 
         except Exception as e:
-            self.send_json(400, {'message': 'no'})
+            self.send_json(501, {'message': 'Not found'})

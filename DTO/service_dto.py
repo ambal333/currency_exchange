@@ -1,5 +1,4 @@
 from dataclasses import dataclass, asdict
-from decimal import Decimal
 
 from DTO.currencies_dto import CurrenciesDTO
 

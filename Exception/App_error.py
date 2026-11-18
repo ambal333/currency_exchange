@@ -68,5 +68,5 @@ class CourseNotExist(AppError):
     pass
 
 
-class AmountLessZero(AppError):
+class AmountError(AppError):
     pass

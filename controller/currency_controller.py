@@ -1,6 +1,5 @@
 from http.client import HTTPException
 
-from DTO.currencies_dto import CurrenciesDTO
 from Exception.App_error import AppError
 from Exception.App_error import CodeNotFoundError
 from controller.base_controller import BaseController
@@ -49,11 +48,11 @@ class CurrencyController(BaseController):
     def do_POST(self):
         try:
             raise HTTPException
-        except Exception:
-            self.send_error(501, 'Данный путь недоступен')
+        except HTTPException:
+            self.send_json(501, {'message': 'Not found'})
 
     def do_PATCH(self):
         try:
             raise HTTPException
-        except Exception:
-            self.send_error(501, 'Данный путь недоступен')
+        except HTTPException:
+            self.send_json(501, {'message': 'Not found'})

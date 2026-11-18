@@ -5,10 +5,8 @@ from urllib.parse import parse_qs
 from Exception.App_error import ExchangeRateCodeNotFound, AppError, \
     FormatFormError
 from Exception.App_error import FormFieldError
-from Exception.App_error import NotExistExchangeRate
 from controller.base_controller import BaseController
 from Service.exchange_rate_service import ExchangeRateService
-from DTO.exchange_rates_dto import ExchangeRatesDTO
 
 
 class ExchangeRateController(BaseController):
@@ -63,7 +61,7 @@ class ExchangeRateController(BaseController):
         try:
             raise HTTPException
         except HTTPException:
-            self.send_error(501, 'Данный путь недоступен')
+            self.send_json(501, {'message': 'Not found'})
 
     def do_PATCH(self):
         try:

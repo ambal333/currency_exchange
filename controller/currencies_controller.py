@@ -75,5 +75,5 @@ class CurrenciesController(BaseController):
     def do_PATCH(self):
         try:
             raise HTTPException
-        except Exception:
-            self.send_error(501, 'Данный путь недоступен')
+        except HTTPException:
+            self.send_json(501, {'message': 'Not found'})

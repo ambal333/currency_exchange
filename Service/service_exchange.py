@@ -3,12 +3,12 @@ from urllib.parse import unquote
 
 from DAO.exchange_rates_dao import ExchangeRatesDao
 from Exception.App_error import CodeStandardError, CourseNotExist, \
-    IntegrityError, CodeNotFoundError, AmountLessZero
+    IntegrityError, AmountError
 from database.db_connection import DatabaseConnection
 from DTO.exchange_rates_dto import ExchangeRatesDTO
 
 
-class ExchangeRatesService:
+class ExchangeService:
     """Класс служит для расчета конвертируемой валюты.
     Атрибуты
     --------
@@ -35,9 +35,15 @@ class ExchangeRatesService:
         code_from = info.get('code_from')
         code_to = info.get('code_to')
 
+        if ' ' in info['amount'] or not info['amount'].isdigit():
+            raise AmountError(
+                400,
+                'параметр amount должен состоять из цифр.'
+            )
+
         if float(info['amount']) < 0:
-            raise AmountLessZero(400,
-                                 'amount не может быть отрицательным')
+            raise AmountError(400,
+                              'amount не может быть отрицательным')
 
         self.__validated_cods(code_from, code_to)
 

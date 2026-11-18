@@ -4,7 +4,7 @@ from urllib.parse import urlparse, parse_qs
 
 from Exception.App_error import AppError, FormFieldError
 from controller.base_controller import BaseController
-from Service.service_exchange import ExchangeRatesService
+from Service.service_exchange import ExchangeService
 from Mappers.mapper_service import MapperService
 
 
@@ -54,7 +54,7 @@ class ServiceExchangeController(BaseController):
                     'amount': dict_param['amount'][0]
                 }
 
-                converted_amount, rate = ExchangeRatesService(
+                converted_amount, rate = ExchangeService(
                     self.connection).calculate_course(dict_param)
 
                 convert_course = self.mapper.to_dto(

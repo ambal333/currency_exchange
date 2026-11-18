@@ -4,7 +4,7 @@ from controller.currencies_controller import CurrenciesController
 from controller.currency_controller import CurrencyController
 from controller.exchangeRates_controller import ExchangeRatesController
 from controller.exchangeRate_controller import ExchangeRateController
-from controller.service_controller import ServiceExchangeController
+from controller.exchange_controller import ServiceExchangeController
 
 routes = {
     'currencies': CurrenciesController,
